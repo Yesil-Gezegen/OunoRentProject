@@ -90,6 +90,7 @@ public class SliderRepository : ISliderRepository
     {
         var sliders = await _applicationDbContext.Sliders
             .AsNoTracking()
+            .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();
 
         var getSlidersResponse = _mapper.Map<List<GetSlidersResponse>>(sliders);

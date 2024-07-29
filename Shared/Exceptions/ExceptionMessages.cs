@@ -9,7 +9,7 @@ public class BlogExceptionMessages
 
 public class CategoryExceptionMessages
 {
-    public const string NotFound = "Category Not Found";
+    public const string NotFound = "Category not found";
     public const string Conflict = "Already exist";
     public const string OrderNumberConflict = "Order number already exists";
 }

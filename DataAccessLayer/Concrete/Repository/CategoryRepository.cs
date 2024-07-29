@@ -26,6 +26,7 @@ public class CategoryRepository : ICategoryRepository
         var categories = await _applicationDbContext.Categories
             .AsNoTracking()
             .Include(x => x.SubCategories)
+            .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .Select(x => new GetCategoriesResponse
             {
                 CategoryId = x.CategoryId,
@@ -97,7 +98,7 @@ public class CategoryRepository : ICategoryRepository
         .FirstOrDefaultAsync()
         ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
 
-        await IsExistOrderNumberWhenUpdate(updateCategoryRequest.CategoryId, updateCategoryRequest.OrderNumber);
+        await IsExistWhenUpdate(updateCategoryRequest.CategoryId, updateCategoryRequest.OrderNumber, updateCategoryRequest.Name);
 
         category.Name = updateCategoryRequest.Name.Trim();
         category.Description = updateCategoryRequest.Description.Trim();
