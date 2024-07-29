@@ -27,26 +27,24 @@ public class BlogRepository : IBlogRepository
         var isExistSubCategory = await _applicationDbContext.SubCategories
         .AnyAsync(x => x.SubCategoryId == createBlogRequest.SubCategoryId);
         if (!isExistSubCategory)
-            throw new NotFoundException("SubCategory not found");
+            throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
         
-        await IsExistGeneric(x => x.OrderNumber == createBlogRequest.OrderNumber);
-
         await IsExistOrderNumber(createBlogRequest.OrderNumber);
 
         var sanitizer = new HtmlSanitizer();
-        var blog = new Blog
-        {
-            LargeImageUrl = createBlogRequest.LargeImageUrl,
-            OrderNumber = createBlogRequest.OrderNumber,
-            Slug = createBlogRequest.Slug,
-            SmallImageUrl = createBlogRequest.SmallImageUrl,
-            IsActive = true,
-            Date = DateTime.UtcNow,
-            SubCategoryId = createBlogRequest.SubCategoryId,
-            Body = sanitizer.Sanitize(createBlogRequest.Body),
-            Title = sanitizer.Sanitize(createBlogRequest.Title),
-            Tags = sanitizer.Sanitize(createBlogRequest.Tags)
-        };
+        
+        var blog = new Blog();
+
+        blog.LargeImageUrl = createBlogRequest.LargeImageUrl.Trim();
+        blog.OrderNumber = createBlogRequest.OrderNumber;
+        blog.Slug = createBlogRequest.Slug.Trim();
+        blog.SmallImageUrl = createBlogRequest.SmallImageUrl.Trim();
+        blog.IsActive = true;
+        blog.Date = DateTime.UtcNow;
+        blog.SubCategoryId = createBlogRequest.SubCategoryId;
+        blog.Body = sanitizer.Sanitize(createBlogRequest.Body.Trim());
+        blog.Title = sanitizer.Sanitize(createBlogRequest.Title.Trim());
+        blog.Tags = sanitizer.Sanitize(createBlogRequest.Tags.Trim());
 
         var result = await _applicationDbContext.Blogs.AddAsync(blog);
 
@@ -65,7 +63,7 @@ public class BlogRepository : IBlogRepository
         .Include(x => x.SubCategory)
         .AsNoTracking()
         .FirstOrDefaultAsync(b => b.BlogId == blogId)
-            ?? throw new NotFoundException("Blog not found");
+            ?? throw new NotFoundException(BlogExceptionMessages.NotFound);
 
         var blogResponse = _mapper.Map<GetBlogResponse>(result);
 
@@ -93,7 +91,7 @@ public class BlogRepository : IBlogRepository
         var blog = await _applicationDbContext.Blogs
             .Where(x => x.BlogId == blogId)
             .FirstOrDefaultAsync()
-        ?? throw new NotFoundException("Blog not found");
+        ?? throw new NotFoundException(BlogExceptionMessages.NotFound);
 
         _applicationDbContext.Blogs.Remove(blog);
 
@@ -110,23 +108,23 @@ public class BlogRepository : IBlogRepository
         var blog = await _applicationDbContext.Blogs
             .Where(x => x.BlogId == updateBlogRequest.BlogId)
             .FirstOrDefaultAsync()
-        ?? throw new NotFoundException("Blog not found");
+        ?? throw new NotFoundException(BlogExceptionMessages.NotFound);
 
         var isExistSubCategory = await _applicationDbContext.SubCategories
          .AnyAsync(x => x.SubCategoryId == updateBlogRequest.SubCategoryId);
         if (!isExistSubCategory)
-            throw new NotFoundException("SubCategory not found");
+            throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
 
         await IsExistOrderNumberWhenUpdate(updateBlogRequest.BlogId, updateBlogRequest.OrderNumber);
 
-        blog.Title = updateBlogRequest.Title;
-        blog.Tags = updateBlogRequest.Tags;
-        blog.Slug = updateBlogRequest.Slug;
+        blog.Title = updateBlogRequest.Title.Trim();
+        blog.Tags = updateBlogRequest.Tags.Trim();
+        blog.Slug = updateBlogRequest.Slug.Trim();
         blog.OrderNumber = updateBlogRequest.OrderNumber;
         blog.Date = updateBlogRequest.Date;
         blog.SubCategoryId = updateBlogRequest.SubCategoryId;
-        blog.LargeImageUrl = updateBlogRequest.LargeImgUrl;
-        blog.SmallImageUrl = updateBlogRequest.SmallImgUrl;
+        blog.LargeImageUrl = updateBlogRequest.LargeImgUrl.Trim();
+        blog.SmallImageUrl = updateBlogRequest.SmallImgUrl.Trim();
         blog.IsActive = updateBlogRequest.IsActive;
 
         await _applicationDbContext.SaveChangesAsync();
@@ -146,7 +144,7 @@ public class BlogRepository : IBlogRepository
 
         if (isExistOrderNumber)
         {
-            throw new ConflictException("Order number already exists");
+            throw new ConflictException(BlogExceptionMessages.OrderNumberConflict);
         }
     }
     
@@ -157,7 +155,7 @@ public class BlogRepository : IBlogRepository
 
         if (isExistOrderNumber)
         {
-            throw new ConflictException("Order number already exists");
+            throw new ConflictException(BlogExceptionMessages.OrderNumberConflict);
         }
     }
 
@@ -166,7 +164,7 @@ public class BlogRepository : IBlogRepository
         var result = await _applicationDbContext.Blogs.AnyAsync(filter);
 
         if (result)
-            throw new ConflictException("Already exist");
+            throw new ConflictException(BlogExceptionMessages.Conflict);
 
         return result;
     }

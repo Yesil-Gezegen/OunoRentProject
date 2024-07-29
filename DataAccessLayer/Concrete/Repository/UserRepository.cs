@@ -46,7 +46,7 @@ public class UserRepository : IUserRepository
         var deletedUser = _applicationDbContext.Users
         .Where(x => x.Id == userId)
         .FirstOrDefault()
-        ?? throw new NotFoundException("User not found");
+        ?? throw new NotFoundException(UserExceptionMessage.NotFound);
 
         _applicationDbContext.Users.Remove(deletedUser);
 
@@ -64,7 +64,7 @@ public class UserRepository : IUserRepository
         .AsNoTracking()
         .Where(x => x.Id == userId)
         .FirstOrDefaultAsync()
-        ?? throw new NotFoundException("User not found");
+        ?? throw new NotFoundException(UserExceptionMessage.NotFound);
 
         var userResponse = _mapper.Map<GetUserResponse>(user);
         return userResponse;
@@ -88,7 +88,7 @@ public class UserRepository : IUserRepository
             .AsNoTracking()
             .Where(x => x.Email == email)
             .FirstOrDefaultAsync()
-            ?? throw new NotFoundException("User not found");
+            ?? throw new NotFoundException(UserExceptionMessage.NotFound);
 
         var userDetailsResponse = _mapper.Map<UserDetailsResponse>(user);
         return userDetailsResponse;
@@ -113,7 +113,7 @@ public class UserRepository : IUserRepository
     {
         var user = await _applicationDbContext.Users
         .FirstOrDefaultAsync(x => x.Id == request.Id)
-        ?? throw new NotFoundException("User not found");
+        ?? throw new NotFoundException(UserExceptionMessage.NotFound);
 
         user.Name = request.Name;
         user.Surname = request.Surname;

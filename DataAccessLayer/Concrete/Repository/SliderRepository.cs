@@ -35,8 +35,8 @@ public class SliderRepository : ISliderRepository
             MobileImageUrl = createSliderRequest.MobileImageUrl,
             TargetUrl = createSliderRequest.TargetUrl,
             OrderNumber = createSliderRequest.OrderNumber,
-            ActiveFrom = createSliderRequest.ActiveFrom,
-            ActiveTo = createSliderRequest.ActiveTo,
+            ActiveFrom = createSliderRequest.ActiveFrom.ToUniversalTime(),
+            ActiveTo = createSliderRequest.ActiveTo.ToUniversalTime(),
             Duration = createSliderRequest.Duration,
             IsActive = createSliderRequest.IsActive
         };
@@ -58,7 +58,7 @@ public class SliderRepository : ISliderRepository
     {
         var slider = await _applicationDbContext.Sliders
                          .FirstOrDefaultAsync(x => x.SliderId == sliderId)
-                     ?? throw new NotFoundException("Slider not found");
+                     ?? throw new NotFoundException(SliderExceptionMessages.NotFound);
 
         _applicationDbContext.Sliders.Remove(slider);
 
@@ -75,7 +75,7 @@ public class SliderRepository : ISliderRepository
     {
         var slider = await _applicationDbContext.Sliders
                          .AsNoTracking().FirstOrDefaultAsync(x => x.SliderId == sliderId)
-                     ?? throw new NotFoundException("Slider not found");
+                     ?? throw new NotFoundException(SliderExceptionMessages.NotFound);
 
         var getSliderResponse = _mapper.Map<GetSliderResponse>(slider);
 
@@ -105,7 +105,7 @@ public class SliderRepository : ISliderRepository
     {
         var slider = await _applicationDbContext.Sliders.FirstOrDefaultAsync(
                          x => x.SliderId == updateSliderRequest.SliderId)
-                     ?? throw new NotFoundException("Slider not found");
+                     ?? throw new NotFoundException(SliderExceptionMessages.NotFound);
 
         await IsExistOrderNumberWhenUpdate(updateSliderRequest.SliderId, updateSliderRequest.OrderNumber);
 
@@ -115,8 +115,8 @@ public class SliderRepository : ISliderRepository
         slider.TargetUrl = updateSliderRequest.TargetUrl;
         slider.OrderNumber = updateSliderRequest.OrderNumber;
         slider.Duration = updateSliderRequest.Duration;
-        slider.ActiveFrom = updateSliderRequest.ActiveFrom;
-        slider.ActiveTo = updateSliderRequest.ActiveTo;
+        slider.ActiveFrom = updateSliderRequest.ActiveFrom.ToUniversalTime();
+        slider.ActiveTo = updateSliderRequest.ActiveTo.ToUniversalTime();
         slider.IsActive = updateSliderRequest.IsActive;
 
         await _applicationDbContext.SaveChangesAsync();
@@ -137,7 +137,7 @@ public class SliderRepository : ISliderRepository
 
         if (isExistOrderNumber)
         {
-            throw new ConflictException("Order number already exists");
+            throw new ConflictException(SliderExceptionMessages.OrderNumberConflict);
         }
     }
     
@@ -148,7 +148,7 @@ public class SliderRepository : ISliderRepository
 
         if (isExistOrderNumber)
         {
-            throw new ConflictException("Order number already exists");
+            throw new ConflictException(SliderExceptionMessages.OrderNumberConflict);
         }
     }
 
@@ -157,7 +157,7 @@ public class SliderRepository : ISliderRepository
         var result = await _applicationDbContext.Sliders.AnyAsync(filter);
 
         if (result)
-            throw new ConflictException("Already exist");
+            throw new ConflictException(SliderExceptionMessages.Conflict);
 
         return result;
     }

@@ -55,7 +55,7 @@ public class CategoryRepository : ICategoryRepository
         .AsNoTracking()
         .Where(x => x.CategoryId == categoryId)
         .FirstOrDefaultAsync()
-        ?? throw new NotFoundException("Category not found");
+        ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
 
         var categoryResponse = _mapper.Map<GetCategoryResponse>(category);
         return categoryResponse;
@@ -65,18 +65,18 @@ public class CategoryRepository : ICategoryRepository
     #region CreateCategory
     public async Task<CategoryResponse> CreateCategory(CreateCategoryRequest createCategoryRequest)
     {
-        await IsExistGeneric(x => x.Name == createCategoryRequest.Name);
+        await IsExistGeneric(x => x.Name.ToLower().Trim() == createCategoryRequest.Name.ToLower().Trim());
 
         await IsExistOrderNumber(createCategoryRequest.OrderNumber);
 
         var category = new Category();
 
-        category.Name = createCategoryRequest.Name;
-        category.Description = createCategoryRequest.Description;
-        category.Icon = createCategoryRequest.Icon;
+        category.Name = createCategoryRequest.Name.Trim();
+        category.Description = createCategoryRequest.Description.Trim();
+        category.Icon = createCategoryRequest.Icon.Trim();
         category.OrderNumber = createCategoryRequest.OrderNumber;
-        category.ImageHorizontalUrl = createCategoryRequest.ImageHorizontalUrl;
-        category.ImageSquareUrl = createCategoryRequest.ImageSquareUrl;
+        category.ImageHorizontalUrl = createCategoryRequest.ImageHorizontalUrl.Trim();
+        category.ImageSquareUrl = createCategoryRequest.ImageSquareUrl.Trim();
         category.IsActive = true;
 
         _applicationDbContext.Categories.Add(category);
@@ -95,16 +95,16 @@ public class CategoryRepository : ICategoryRepository
         var category = await _applicationDbContext.Categories
         .Where(x => x.CategoryId == updateCategoryRequest.CategoryId)
         .FirstOrDefaultAsync()
-        ?? throw new NotFoundException("Category not found");
+        ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
 
         await IsExistOrderNumberWhenUpdate(updateCategoryRequest.CategoryId, updateCategoryRequest.OrderNumber);
 
-        category.Name = updateCategoryRequest.Name;
-        category.Description = updateCategoryRequest.Description;
-        category.Icon = updateCategoryRequest.Icon;
+        category.Name = updateCategoryRequest.Name.Trim();
+        category.Description = updateCategoryRequest.Description.Trim();
+        category.Icon = updateCategoryRequest.Icon.Trim();
         category.OrderNumber = updateCategoryRequest.OrderNumber;
-        category.ImageHorizontalUrl = updateCategoryRequest.ImageHorizontalUrl;
-        category.ImageSquareUrl = updateCategoryRequest.ImageSquareUrl;
+        category.ImageHorizontalUrl = updateCategoryRequest.ImageHorizontalUrl.Trim();
+        category.ImageSquareUrl = updateCategoryRequest.ImageSquareUrl.Trim();
         category.IsActive =  true;
 
         await _applicationDbContext.SaveChangesAsync();
@@ -120,7 +120,7 @@ public class CategoryRepository : ICategoryRepository
         var category = await _applicationDbContext.Categories
         .Where(x => x.CategoryId == categoryId)
         .FirstOrDefaultAsync()
-        ?? throw new NotFoundException("Category not found");
+        ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
 
         await IsUsedCategory(categoryId);
 
@@ -140,18 +140,26 @@ public class CategoryRepository : ICategoryRepository
 
         if (isExistOrderNumber)
         {
-            throw new ConflictException("Order number already exists");
+            throw new ConflictException(CategoryExceptionMessages.OrderNumberConflict);
         }
     }
     
-    private async Task IsExistOrderNumberWhenUpdate(Guid categoryId, int orderNumber)
+    private async Task IsExistWhenUpdate(Guid categoryId, int orderNumber, string name)
     {
         var isExistOrderNumber = await _applicationDbContext.Categories
             .AnyAsync(x => x.CategoryId != categoryId && x.OrderNumber == orderNumber);
+        
+        var isExistCategory = await _applicationDbContext.Categories
+            .AnyAsync(x=> x.CategoryId != categoryId && x.Name.ToLower().Trim() == name.ToLower().Trim());
 
         if (isExistOrderNumber)
         {
-            throw new ConflictException("Order number already exists");
+            throw new ConflictException(CategoryExceptionMessages.OrderNumberConflict);
+        }
+
+        if (isExistCategory)
+        {
+            throw new ConflictException("Category already exists");
         }
     }
 
@@ -160,7 +168,7 @@ public class CategoryRepository : ICategoryRepository
         var result = await _applicationDbContext.Categories.AnyAsync(filter);
 
         if (result)
-            throw new ConflictException("Already exist");
+            throw new ConflictException(CategoryExceptionMessages.Conflict);
 
         return result;
     }

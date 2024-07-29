@@ -38,7 +38,7 @@ public class MenuItemsControllerTests : IClassFixture<WebApplicationFactory<Prog
     {
         var faker = new Faker<CreateMenuItemRequest>()
             .CustomInstantiator(f => new CreateMenuItemRequest(
-                Label: f.Lorem.Sentence(),
+                Label: "aaa",
                 TargetUrl: f.Internet.DomainName(),
                 OrderNumber: f.Random.Int(1, 10000),
                 OnlyToMembers: f.Random.Bool(),
