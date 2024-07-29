@@ -29,24 +29,22 @@ public class BlogRepository : IBlogRepository
         if (!isExistSubCategory)
             throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
         
-        await IsExistGeneric(x => x.OrderNumber == createBlogRequest.OrderNumber);
-
         await IsExistOrderNumber(createBlogRequest.OrderNumber);
 
         var sanitizer = new HtmlSanitizer();
-        var blog = new Blog
-        {
-            LargeImageUrl = createBlogRequest.LargeImageUrl,
-            OrderNumber = createBlogRequest.OrderNumber,
-            Slug = createBlogRequest.Slug,
-            SmallImageUrl = createBlogRequest.SmallImageUrl,
-            IsActive = true,
-            Date = DateTime.UtcNow,
-            SubCategoryId = createBlogRequest.SubCategoryId,
-            Body = sanitizer.Sanitize(createBlogRequest.Body),
-            Title = sanitizer.Sanitize(createBlogRequest.Title),
-            Tags = sanitizer.Sanitize(createBlogRequest.Tags)
-        };
+        
+        var blog = new Blog();
+
+        blog.LargeImageUrl = createBlogRequest.LargeImageUrl.Trim();
+        blog.OrderNumber = createBlogRequest.OrderNumber;
+        blog.Slug = createBlogRequest.Slug.Trim();
+        blog.SmallImageUrl = createBlogRequest.SmallImageUrl.Trim();
+        blog.IsActive = true;
+        blog.Date = DateTime.UtcNow;
+        blog.SubCategoryId = createBlogRequest.SubCategoryId;
+        blog.Body = sanitizer.Sanitize(createBlogRequest.Body.Trim());
+        blog.Title = sanitizer.Sanitize(createBlogRequest.Title.Trim());
+        blog.Tags = sanitizer.Sanitize(createBlogRequest.Tags.Trim());
 
         var result = await _applicationDbContext.Blogs.AddAsync(blog);
 
@@ -119,14 +117,14 @@ public class BlogRepository : IBlogRepository
 
         await IsExistOrderNumberWhenUpdate(updateBlogRequest.BlogId, updateBlogRequest.OrderNumber);
 
-        blog.Title = updateBlogRequest.Title;
-        blog.Tags = updateBlogRequest.Tags;
-        blog.Slug = updateBlogRequest.Slug;
+        blog.Title = updateBlogRequest.Title.Trim();
+        blog.Tags = updateBlogRequest.Tags.Trim();
+        blog.Slug = updateBlogRequest.Slug.Trim();
         blog.OrderNumber = updateBlogRequest.OrderNumber;
         blog.Date = updateBlogRequest.Date;
         blog.SubCategoryId = updateBlogRequest.SubCategoryId;
-        blog.LargeImageUrl = updateBlogRequest.LargeImgUrl;
-        blog.SmallImageUrl = updateBlogRequest.SmallImgUrl;
+        blog.LargeImageUrl = updateBlogRequest.LargeImgUrl.Trim();
+        blog.SmallImageUrl = updateBlogRequest.SmallImgUrl.Trim();
         blog.IsActive = updateBlogRequest.IsActive;
 
         await _applicationDbContext.SaveChangesAsync();
