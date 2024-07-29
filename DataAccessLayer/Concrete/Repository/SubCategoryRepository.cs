@@ -111,7 +111,7 @@ public class SubCategoryRepository : ISubCategoryRepository
         .FirstOrDefaultAsync()
         ?? throw new NotFoundException("SubCategory not found");
 
-        await IsExistOrderNumber(updateSubCategoryRequest.OrderNumber);
+        await IsExistOrderNumberWhenUpdate(updateSubCategoryRequest.SubCategoryId, updateSubCategoryRequest.OrderNumber);
 
         subCategory.Name = updateSubCategoryRequest.Name;
         subCategory.Description = updateSubCategoryRequest.Description;
@@ -149,6 +149,17 @@ public class SubCategoryRepository : ISubCategoryRepository
             throw new ConflictException("Already exist");
 
         return result;
+    }
+    
+    private async Task IsExistOrderNumberWhenUpdate(Guid subCategoryId, int orderNumber)
+    {
+        var isExistOrderNumber = await _applicationDbContext.SubCategories
+            .AnyAsync(x => x.SubCategoryId != subCategoryId && x.OrderNumber == orderNumber);
+
+        if (isExistOrderNumber)
+        {
+            throw new ConflictException("Order number already exists");
+        }
     }
 
     #endregion

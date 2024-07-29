@@ -107,7 +107,7 @@ public class MenuItemRepository : IMenuItemRepository
     {
         await IsExistGeneric(x => x.Label == updateMenuItemRequest.Label);
 
-        await IsExistOrderNumber(updateMenuItemRequest.OrderNumber);
+        await IsExistOrderNumberWhenUpdate(updateMenuItemRequest.MenuItemId, updateMenuItemRequest.OrderNumber);
 
         var menuItem = await _applicationDbContext.MenuItems
                            .Where(x => x.MenuItemId == updateMenuItemRequest.MenuItemId)
@@ -147,8 +147,18 @@ public class MenuItemRepository : IMenuItemRepository
         if (isExistOrderNumber)
             throw new ConflictException("Order number already exists");
     }
+    
+    private async Task IsExistOrderNumberWhenUpdate(Guid menuItemId, int orderNumber)
+    {
+        var isExistOrderNumber = await _applicationDbContext.MenuItems
+            .AnyAsync(x => x.MenuItemId != menuItemId && x.OrderNumber == orderNumber);
 
-
+        if (isExistOrderNumber)
+        {
+            throw new ConflictException("Order number already exists");
+        }
+    }
+    
     #endregion
     
    
