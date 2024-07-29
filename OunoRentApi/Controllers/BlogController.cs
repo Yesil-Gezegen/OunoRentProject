@@ -38,15 +38,15 @@ public class BlogController : ControllerBase
         return Ok(result);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete("{blogId:guid}")]
+    public async Task<IActionResult> Delete(Guid blogId)
     {
-        var result = await _mediator.Send(new DeleteBlogCommand(id));
+        var result = await _mediator.Send(new DeleteBlogCommand(blogId));
 
         return Ok(result);
     }
 
-    [HttpPut("{id:guid}")]
+    [HttpPut("{blogId:guid}")]
     public async Task<IActionResult> Update(UpdateBlogRequest updateBlogRequest)
     {
         var result = await _mediator.Send(new UpdateBlogCommand(updateBlogRequest));
