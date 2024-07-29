@@ -97,7 +97,7 @@ public class CategoryRepository : ICategoryRepository
         .FirstOrDefaultAsync()
         ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
 
-        await IsExistOrderNumberWhenUpdate(updateCategoryRequest.CategoryId, updateCategoryRequest.OrderNumber);
+        await IsExistWhenUpdate(updateCategoryRequest.CategoryId, updateCategoryRequest.OrderNumber, updateCategoryRequest.Name);
 
         category.Name = updateCategoryRequest.Name.Trim();
         category.Description = updateCategoryRequest.Description.Trim();
