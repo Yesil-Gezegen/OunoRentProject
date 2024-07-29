@@ -107,7 +107,7 @@ public class SliderRepository : ISliderRepository
                          x => x.SliderId == updateSliderRequest.SliderId)
                      ?? throw new NotFoundException("Slider not found");
 
-        await IsExistOrderNumber(updateSliderRequest.OrderNumber);
+        await IsExistOrderNumberWhenUpdate(updateSliderRequest.SliderId, updateSliderRequest.OrderNumber);
 
         slider.Title = updateSliderRequest.Title;
         slider.MainImageUrl = updateSliderRequest.MainImageUrl;
@@ -134,6 +134,17 @@ public class SliderRepository : ISliderRepository
     {
         var isExistOrderNumber = await _applicationDbContext.Sliders
             .AnyAsync(x => x.OrderNumber == orderNumber);
+
+        if (isExistOrderNumber)
+        {
+            throw new ConflictException("Order number already exists");
+        }
+    }
+    
+    private async Task IsExistOrderNumberWhenUpdate(Guid sliderId, int orderNumber)
+    {
+        var isExistOrderNumber = await _applicationDbContext.Sliders
+            .AnyAsync(x => x.SliderId != sliderId && x.OrderNumber == orderNumber);
 
         if (isExistOrderNumber)
         {

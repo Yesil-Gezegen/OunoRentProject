@@ -117,7 +117,7 @@ public class BlogRepository : IBlogRepository
         if (!isExistSubCategory)
             throw new NotFoundException("SubCategory not found");
 
-        await IsExistOrderNumber(updateBlogRequest.OrderNumber);
+        await IsExistOrderNumberWhenUpdate(updateBlogRequest.BlogId, updateBlogRequest.OrderNumber);
 
         blog.Title = updateBlogRequest.Title;
         blog.Tags = updateBlogRequest.Tags;
@@ -139,6 +139,17 @@ public class BlogRepository : IBlogRepository
     #endregion
     
     #region IsExist
+    private async Task IsExistOrderNumberWhenUpdate(Guid blogId, int orderNumber)
+    {
+        var isExistOrderNumber = await _applicationDbContext.Blogs
+            .AnyAsync(x => x.BlogId != blogId && x.OrderNumber == orderNumber);
+
+        if (isExistOrderNumber)
+        {
+            throw new ConflictException("Order number already exists");
+        }
+    }
+    
     private async Task IsExistOrderNumber(int orderNumber)
     {
         var isExistOrderNumber = await _applicationDbContext.Blogs

@@ -97,7 +97,7 @@ public class CategoryRepository : ICategoryRepository
         .FirstOrDefaultAsync()
         ?? throw new NotFoundException("Category not found");
 
-        await IsExistOrderNumber(updateCategoryRequest.OrderNumber);
+        await IsExistOrderNumberWhenUpdate(updateCategoryRequest.CategoryId, updateCategoryRequest.OrderNumber);
 
         category.Name = updateCategoryRequest.Name;
         category.Description = updateCategoryRequest.Description;
@@ -137,6 +137,17 @@ public class CategoryRepository : ICategoryRepository
     {
         var isExistOrderNumber = await _applicationDbContext.Categories
             .AnyAsync(x => x.OrderNumber == orderNumber);
+
+        if (isExistOrderNumber)
+        {
+            throw new ConflictException("Order number already exists");
+        }
+    }
+    
+    private async Task IsExistOrderNumberWhenUpdate(Guid categoryId, int orderNumber)
+    {
+        var isExistOrderNumber = await _applicationDbContext.Categories
+            .AnyAsync(x => x.CategoryId != categoryId && x.OrderNumber == orderNumber);
 
         if (isExistOrderNumber)
         {
