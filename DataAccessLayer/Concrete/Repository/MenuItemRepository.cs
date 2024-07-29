@@ -91,6 +91,7 @@ public class MenuItemRepository : IMenuItemRepository
     {
         var entity = await _applicationDbContext.MenuItems
             .AsNoTracking()
+            .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();
 
         var menuItemResponse = _mapper.Map<List<GetMenuItemsResponse>>(entity);

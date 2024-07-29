@@ -77,6 +77,7 @@ public class BlogRepository : IBlogRepository
         var blogList = await _applicationDbContext.Blogs
         .Include(x => x.SubCategory)
         .AsNoTracking()
+        .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
         .ToListAsync();
 
         var blogResponse = _mapper.Map<List<GetBlogsResponse>>(blogList);

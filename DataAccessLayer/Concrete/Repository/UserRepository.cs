@@ -100,6 +100,7 @@ public class UserRepository : IUserRepository
     {
         var users = await _applicationDbContext.Users
         .AsNoTracking()
+        .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
         .ToListAsync();
 
         var usersResponse = _mapper.Map<List<GetUsersResponse>>(users);

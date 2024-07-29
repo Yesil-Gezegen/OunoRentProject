@@ -26,6 +26,7 @@ public class CategoryRepository : ICategoryRepository
         var categories = await _applicationDbContext.Categories
             .AsNoTracking()
             .Include(x => x.SubCategories)
+            .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .Select(x => new GetCategoriesResponse
             {
                 CategoryId = x.CategoryId,

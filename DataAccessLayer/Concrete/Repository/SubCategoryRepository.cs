@@ -76,6 +76,7 @@ public class SubCategoryRepository : ISubCategoryRepository
         var subCategoriesList = await _applicationDbContext.SubCategories
         .Include(x => x.Category)
         .AsNoTracking()
+        .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
         .Where(x => x.CategoryId == categoryId)
         .ToListAsync();
 
