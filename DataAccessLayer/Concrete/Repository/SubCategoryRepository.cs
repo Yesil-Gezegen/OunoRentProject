@@ -59,7 +59,7 @@ public class SubCategoryRepository : ISubCategoryRepository
         .Include(x => x.Category)
         .Where(x => x.SubCategoryId == subCategoryId)
         .FirstOrDefaultAsync()
-        ?? throw new NotFoundException("SubCategory not found");
+        ?? throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
 
         _applicationDbContext.SubCategories.Remove(subCategory);
 
@@ -93,7 +93,7 @@ public class SubCategoryRepository : ISubCategoryRepository
         .AsNoTracking()
         .Where(x => x.CategoryId == categoryId && x.SubCategoryId == subCategoryId)
         .FirstOrDefaultAsync()
-        ?? throw new NotFoundException("SubCategory not found");
+        ?? throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
 
         var subCategoryResponse = _mapper.Map<GetSubCategoryResponse>(subCategory);
 
@@ -109,7 +109,7 @@ public class SubCategoryRepository : ISubCategoryRepository
         .Include(x => x.Category)
         .Where(x => x.CategoryId == categoryId && x.SubCategoryId == updateSubCategoryRequest.SubCategoryId)
         .FirstOrDefaultAsync()
-        ?? throw new NotFoundException("SubCategory not found");
+        ?? throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
 
         await IsExistOrderNumberWhenUpdate(updateSubCategoryRequest.SubCategoryId, updateSubCategoryRequest.OrderNumber);
 
@@ -137,7 +137,7 @@ public class SubCategoryRepository : ISubCategoryRepository
 
         if (isExistOrderNumber)
         {
-            throw new ConflictException("Order number already exists");
+            throw new ConflictException(SubCategoryExceptionMessages.OrderNumberConflict);
         }
     }
 
@@ -146,7 +146,7 @@ public class SubCategoryRepository : ISubCategoryRepository
         var result = await _applicationDbContext.SubCategories.AnyAsync(filter);
 
         if (result)
-            throw new ConflictException("Already exist");
+            throw new ConflictException(SubCategoryExceptionMessages.Conflict);
 
         return result;
     }
@@ -158,7 +158,7 @@ public class SubCategoryRepository : ISubCategoryRepository
 
         if (isExistOrderNumber)
         {
-            throw new ConflictException("Order number already exists");
+            throw new ConflictException(SubCategoryExceptionMessages.OrderNumberConflict);
         }
     }
 

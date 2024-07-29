@@ -55,7 +55,7 @@ public class CategoryRepository : ICategoryRepository
         .AsNoTracking()
         .Where(x => x.CategoryId == categoryId)
         .FirstOrDefaultAsync()
-        ?? throw new NotFoundException("Category not found");
+        ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
 
         var categoryResponse = _mapper.Map<GetCategoryResponse>(category);
         return categoryResponse;
@@ -95,7 +95,7 @@ public class CategoryRepository : ICategoryRepository
         var category = await _applicationDbContext.Categories
         .Where(x => x.CategoryId == updateCategoryRequest.CategoryId)
         .FirstOrDefaultAsync()
-        ?? throw new NotFoundException("Category not found");
+        ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
 
         await IsExistOrderNumberWhenUpdate(updateCategoryRequest.CategoryId, updateCategoryRequest.OrderNumber);
 
@@ -120,7 +120,7 @@ public class CategoryRepository : ICategoryRepository
         var category = await _applicationDbContext.Categories
         .Where(x => x.CategoryId == categoryId)
         .FirstOrDefaultAsync()
-        ?? throw new NotFoundException("Category not found");
+        ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
 
         await IsUsedCategory(categoryId);
 
@@ -140,7 +140,7 @@ public class CategoryRepository : ICategoryRepository
 
         if (isExistOrderNumber)
         {
-            throw new ConflictException("Order number already exists");
+            throw new ConflictException(CategoryExceptionMessages.OrderNumberConflict);
         }
     }
     
@@ -151,7 +151,7 @@ public class CategoryRepository : ICategoryRepository
 
         if (isExistOrderNumber)
         {
-            throw new ConflictException("Order number already exists");
+            throw new ConflictException(CategoryExceptionMessages.OrderNumberConflict);
         }
     }
 
@@ -160,7 +160,7 @@ public class CategoryRepository : ICategoryRepository
         var result = await _applicationDbContext.Categories.AnyAsync(filter);
 
         if (result)
-            throw new ConflictException("Already exist");
+            throw new ConflictException(CategoryExceptionMessages.Conflict);
 
         return result;
     }

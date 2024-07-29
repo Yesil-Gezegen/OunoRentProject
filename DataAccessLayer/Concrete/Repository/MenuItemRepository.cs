@@ -56,7 +56,7 @@ public class MenuItemRepository : IMenuItemRepository
         var entity = await _applicationDbContext.MenuItems
                          .AsNoTracking()
                          .FirstOrDefaultAsync(x => x.MenuItemId == menuItemId)
-                     ?? throw new NotFoundException("Menu item not found.");
+                     ?? throw new NotFoundException(MenuItemExceptionMessages.NotFound);
 
         _applicationDbContext.MenuItems.Remove(entity);
 
@@ -75,7 +75,7 @@ public class MenuItemRepository : IMenuItemRepository
         var menuItem = await _applicationDbContext.MenuItems
                            .AsNoTracking()
                            .FirstOrDefaultAsync(x => x.MenuItemId == menuItemId)
-                       ?? throw new NotFoundException("Menu not found");
+                       ?? throw new NotFoundException(MenuItemExceptionMessages.NotFound);
 
         var menuItemResponse = _mapper.Map<GetMenuItemResponse>(menuItem);
         
@@ -112,7 +112,7 @@ public class MenuItemRepository : IMenuItemRepository
         var menuItem = await _applicationDbContext.MenuItems
                            .Where(x => x.MenuItemId == updateMenuItemRequest.MenuItemId)
                            .FirstOrDefaultAsync()
-                       ?? throw new NotFoundException("Menu item not found");
+                       ?? throw new NotFoundException(MenuItemExceptionMessages.NotFound);
 
         menuItem.Label = updateMenuItemRequest.Label;
         menuItem.TargetUrl = updateMenuItemRequest.TargetUrl;
@@ -145,7 +145,7 @@ public class MenuItemRepository : IMenuItemRepository
             .AnyAsync(x => x.OrderNumber == orderNumber);
 
         if (isExistOrderNumber)
-            throw new ConflictException("Order number already exists");
+            throw new ConflictException(MenuItemExceptionMessages.OrderNumberConflict);
     }
     
     private async Task IsExistOrderNumberWhenUpdate(Guid menuItemId, int orderNumber)
@@ -155,7 +155,7 @@ public class MenuItemRepository : IMenuItemRepository
 
         if (isExistOrderNumber)
         {
-            throw new ConflictException("Order number already exists");
+            throw new ConflictException(MenuItemExceptionMessages.OrderNumberConflict);
         }
     }
     
