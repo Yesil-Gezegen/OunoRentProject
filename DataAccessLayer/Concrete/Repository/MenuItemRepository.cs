@@ -116,8 +116,6 @@ public class MenuItemRepository : IMenuItemRepository
 
     public async Task<MenuItemResponse> UpdateMenuItemAsync(UpdateMenuItemRequest updateMenuItemRequest)
     {
-        await IsExistGeneric(x => x.Label == updateMenuItemRequest.Label);
-
         await IsExistWhenUpdate(updateMenuItemRequest.MenuItemId, updateMenuItemRequest.OrderNumber,
             updateMenuItemRequest.Label);
 
