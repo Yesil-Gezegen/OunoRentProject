@@ -1,5 +1,4 @@
 // DataAccessLayer/Concrete/ApplicationDbContext.cs
-
 using Microsoft.EntityFrameworkCore;
 using EntityLayer.Entities;
 using EntityLayer;
@@ -8,9 +7,7 @@ namespace DataAccessLayer.Concrete;
 
 public class ApplicationDbContext : DbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-    {
-    }
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
     public DbSet<Category> Categories { get; set; }
     public DbSet<User> Users { get; set; }
@@ -22,6 +19,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<FAQ> FAQ { get; set; }
 
     public DbSet<FooterItem> FooterItems { get; set; }
+
+    public DbSet<ContactForm> ContactForms { get; set; }
 
     public override int SaveChanges()
     {

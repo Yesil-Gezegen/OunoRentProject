@@ -34,6 +34,11 @@ public class SubCategoryExceptionMessages
     public const string OrderNumberConflict = "Order number already exists";
 }
 
+public class ContactFormExceptionMessages
+{
+    public const string NotFound = "Contact form not found";
+}
+
 public class UserExceptionMessage
 {
     public const string NotFound = "User not found";
