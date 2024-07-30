@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.Middlewares;
 using EntityLayer.Entities;
 using Microsoft.CodeAnalysis.CSharp;
@@ -26,7 +27,9 @@ public class SubCategoryRepository : ISubCategoryRepository
     }
 
     #region CreateSubCategory
-    public async Task<SubCategoryResponse> CreateSubCategory(Guid categoryId, CreateSubCategoryRequest createSubCategoryRequest)
+
+    public async Task<SubCategoryResponse> CreateSubCategory(Guid categoryId,
+        CreateSubCategoryRequest createSubCategoryRequest)
     {
         await IsExistGeneric(x=> x.Name.ToLower().Trim() == createSubCategoryRequest.Name.ToLower().Trim());
 
@@ -53,13 +56,14 @@ public class SubCategoryRepository : ISubCategoryRepository
     #endregion
 
     #region DeleteSubCategory
+
     public async Task<Guid> DeleteSubCategory(Guid subCategoryId)
     {
         var subCategory = await _applicationDbContext.SubCategories
-        .Include(x => x.Category)
-        .Where(x => x.SubCategoryId == subCategoryId)
-        .FirstOrDefaultAsync()
-        ?? throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
+                              .Include(x => x.Category)
+                              .Where(x => x.SubCategoryId == subCategoryId)
+                              .FirstOrDefaultAsync()
+                          ?? throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
 
         _applicationDbContext.SubCategories.Remove(subCategory);
 
@@ -71,16 +75,26 @@ public class SubCategoryRepository : ISubCategoryRepository
     #endregion
 
     #region GetSubCategories
-    public async Task<List<GetSubCategoriesResponse>> GetSubCategories(Guid categoryId)
-    {
-        var subCategoriesList = await _applicationDbContext.SubCategories
-        .Include(x => x.Category)
-        .AsNoTracking()
-        .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
-        .Where(x => x.CategoryId == categoryId)
-        .ToListAsync();
 
-        var subCategoriesResponse = _mapper.Map<List<GetSubCategoriesResponse>>(subCategoriesList);
+    public async Task<List<GetSubCategoriesResponse>> GetSubCategories(Guid categoryId,
+        Expression<Func<GetSubCategoryResponse, bool>>? predicate = null)
+    {
+        var subCategories = _applicationDbContext.SubCategories
+            .Include(x => x.Category)
+            .AsNoTracking()
+            .Where(x => x.CategoryId == categoryId);
+        
+        if (predicate != null)
+        {
+            var subCategoriesPredicate = _mapper.MapExpression<Expression<Func<SubCategory, bool>>>(predicate);
+            subCategories = subCategories.Where(subCategoriesPredicate);
+        }
+
+        var subCategpriesList = await subCategories
+            .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
+            .ToListAsync();
+
+        var subCategoriesResponse = _mapper.Map<List<GetSubCategoriesResponse>>(subCategpriesList);
 
         return subCategoriesResponse;
     }
@@ -88,13 +102,14 @@ public class SubCategoryRepository : ISubCategoryRepository
     #endregion
 
     #region GetSubCategory
+
     public async Task<GetSubCategoryResponse> GetSubCategory(Guid categoryId, Guid subCategoryId)
     {
         var subCategory = await _applicationDbContext.SubCategories
-        .AsNoTracking()
-        .Where(x => x.CategoryId == categoryId && x.SubCategoryId == subCategoryId)
-        .FirstOrDefaultAsync()
-        ?? throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
+                              .AsNoTracking()
+                              .Where(x => x.CategoryId == categoryId && x.SubCategoryId == subCategoryId)
+                              .FirstOrDefaultAsync()
+                          ?? throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
 
         var subCategoryResponse = _mapper.Map<GetSubCategoryResponse>(subCategory);
 
@@ -104,13 +119,16 @@ public class SubCategoryRepository : ISubCategoryRepository
     #endregion
 
     #region UpdateSubCategory
-    public async Task<SubCategoryResponse> UpdateSubCategory(Guid categoryId, UpdateSubCategoryRequest updateSubCategoryRequest)
+
+    public async Task<SubCategoryResponse> UpdateSubCategory(Guid categoryId,
+        UpdateSubCategoryRequest updateSubCategoryRequest)
     {
         var subCategory = await _applicationDbContext.SubCategories
-        .Include(x => x.Category)
-        .Where(x => x.CategoryId == categoryId && x.SubCategoryId == updateSubCategoryRequest.SubCategoryId)
-        .FirstOrDefaultAsync()
-        ?? throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
+                              .Include(x => x.Category)
+                              .Where(x => x.CategoryId == categoryId &&
+                                          x.SubCategoryId == updateSubCategoryRequest.SubCategoryId)
+                              .FirstOrDefaultAsync()
+                          ?? throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
 
         await IsExistWhenUpdate(
             updateSubCategoryRequest.SubCategoryId, updateSubCategoryRequest.OrderNumber, updateSubCategoryRequest.Name);
@@ -132,6 +150,7 @@ public class SubCategoryRepository : ISubCategoryRepository
     #endregion
 
     #region IsExistSubCategory
+
     private async Task IsExistOrderNumber(int orderNumber)
     {
         var isExistOrderNumber = await _applicationDbContext.SubCategories

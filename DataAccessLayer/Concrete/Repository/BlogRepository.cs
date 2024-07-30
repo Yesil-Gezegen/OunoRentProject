@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.Middlewares;
 using EntityLayer.Entities;
 using Ganss.Xss;
@@ -72,13 +73,21 @@ public class BlogRepository : IBlogRepository
     #endregion
 
     #region GetBlogs
-    public async Task<List<GetBlogsResponse>> GetBlogsAsync()
+    public async Task<List<GetBlogsResponse>> GetBlogsAsync(Expression<Func<GetBlogResponse, bool>>? predicate = null)
     {
-        var blogList = await _applicationDbContext.Blogs
-        .Include(x => x.SubCategory)
-        .AsNoTracking()
-        .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
-        .ToListAsync();
+        var blogs = _applicationDbContext.Blogs
+            .Include(x => x.SubCategory)
+            .AsNoTracking();
+
+        if (predicate != null)
+        {
+            var blogPredicate = _mapper.MapExpression<Expression<Func<Blog, bool>>>(predicate);
+            blogs = blogs.Where(blogPredicate);
+        }
+
+        var blogList = await blogs
+            .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
+            .ToListAsync();
 
         var blogResponse = _mapper.Map<List<GetBlogsResponse>>(blogList);
 

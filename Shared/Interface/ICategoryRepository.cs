@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Shared.DTO.Category.Request;
 using Shared.DTO.Category.Response;
 
@@ -9,7 +10,7 @@ public interface ICategoryRepository
     /// Veritabanından tüm kategorileri getirir ve kategori bilgilerini içeren bir liste döner.
     /// </summary>
     /// <returns>Tüm kategorilerin bilgilerini içeren GetCategoriesResponse nesnelerinin listesi.</returns>
-    Task<List<GetCategoriesResponse>> GetCategories();
+    Task<List<GetCategoriesResponse>> GetCategories(Expression<Func<GetCategoryResponse, bool>>? predicate = null);
 
     /// <summary>
     /// Verilen kategori ID'sine göre kategoriyi getirir ve kategori bilgilerini içeren bir nesne döner.

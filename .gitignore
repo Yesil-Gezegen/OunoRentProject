@@ -535,4 +535,3 @@ Temporary Items
 .idea
 .vscode
 /DataAccessLayer/Migrations/
-OunoRentApi/Properties/launchSettings.json

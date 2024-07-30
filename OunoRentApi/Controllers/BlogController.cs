@@ -27,14 +27,21 @@ public class BlogController : ControllerBase
     [HttpGet("{blogId:guid}")]
     public async Task<IActionResult> GetBlog(Guid blogId)
     {
-        var result = await _mediator.Send(new GetBlogCommand(blogId));
+        var result = await _mediator.Send(new GetBlogQuery(blogId));
         return Ok(result);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetBlogs()
     {
-        var result = await _mediator.Send(new GetBlogsCommand());
+        var result = await _mediator.Send(new GetBlogsQuery());
+        return Ok(result);
+    }
+
+    [HttpGet("GetActive")]
+    public async Task<IActionResult> GetActiveBlogs()
+    {
+        var result = await _mediator.Send(new GetActiveBlogsQuery());
         return Ok(result);
     }
 

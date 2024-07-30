@@ -5,6 +5,7 @@ using BusinessLayer.CQRS.SubCategory.Query;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Category.Request;
+using Shared.DTO.Category.Response;
 using Shared.DTO.SubCategory.Request;
 
 namespace OunoRentApi.Controllers.CategoryController;
@@ -24,6 +25,13 @@ public class CategoryController : ControllerBase
     public async Task<IActionResult> GetCategories()
     {
         var categories = await _mediator.Send(new GetCategoriesQuery());
+        return Ok(categories);
+    }
+
+    [HttpGet("GetActive")]
+    public async Task<IActionResult> GetActiveCategories()
+    {
+        var categories = await _mediator.Send(new GetActiveCategoriesQuery());
         return Ok(categories);
     }
 
@@ -81,6 +89,14 @@ public class CategoryController : ControllerBase
         return Ok(category);
     }
 
+    [HttpGet("{categoryId:guid}/subcategory/getActive")]
+    public async Task<IActionResult> GetActiveSubCategories(Guid categoryId)
+    {
+        var category = await _mediator.Send(new GetActiveSubCategoriesQuery(categoryId));
+
+        return Ok(category);
+    }
+    
     [HttpPut("{categoryId:guid}/subcategory/{subCategoryId:guid}")]
     public async Task<IActionResult> UpdateSubCategory(Guid categoryId, UpdateSubCategoryRequest updateSubCategoryRequest)
     {
