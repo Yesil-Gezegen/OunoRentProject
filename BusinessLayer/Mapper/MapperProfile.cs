@@ -6,6 +6,7 @@ using Shared.DTO.Authentication.Response;
 using Shared.DTO.Slider.Response;
 using Shared.DTO.Blog.Response;
 using Shared.DTO.Blog.Request;
+using Shared.DTO.FeaturedCategories.Response;
 using Shared.DTO.FooterItem.Response;
 using Shared.DTO.SubCategory.Response;
 using Shared.DTO.MenuItem.Response;
@@ -42,6 +43,12 @@ public class MapperProfile : Profile
 		CreateMap<MenuItem, MenuItemResponse>();
 		CreateMap<MenuItem, GetMenuItemResponse>();
 		CreateMap<MenuItem, GetMenuItemsResponse>();
+		
+		CreateMap<FeaturedCategory, FeaturedCategoryResponse>();
+		CreateMap<FeaturedCategory, GetFeaturedCategoryResponse>()
+			.ForMember(dest => dest.GetCategoryResponse, opt => opt.MapFrom(src => src.Category));
+		CreateMap<FeaturedCategory, GetFeaturedCategoriesResponse>()
+			.ForMember(dest => dest.GetCategoryResponse, opt => opt.MapFrom(src => src.Category));
 
 		CreateMap<FooterItem, FooterItemResponse>();
 		CreateMap<FooterItem, GetFooterItemsResponse>();
