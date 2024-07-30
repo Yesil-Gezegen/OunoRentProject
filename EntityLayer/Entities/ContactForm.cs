@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace EntityLayer.Entities;
 
 public class ContactForm : AuditTrailer
 {
+    [Key]
     public Guid ContactFormId { get; set; }
 
     public string Name { get; set; }
