@@ -46,3 +46,10 @@ public class AuthenticationExceptionMessage
     public const string EmailAlreadyExist = "Email already exist";
     public const string InvalidToken = "Invalid Token";
 }
+
+public class FooterItemExceptionMessages
+{
+    public const string NotFound = "Footer item not found";
+    public const string Conflict = "Already exist";
+    public const string OrderNumberConflict = "Order number already exists";
+}

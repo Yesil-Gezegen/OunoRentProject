@@ -16,6 +16,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<SubCategory> SubCategories { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
 
+    public DbSet<FooterItem> FooterItems { get; set; }
+
     public override int SaveChanges()
     {
         UpdateAuditInformation();

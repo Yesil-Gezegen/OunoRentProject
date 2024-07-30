@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.Middlewares;
 using EntityLayer.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ public class MenuItemRepository : IMenuItemRepository
 
     public async Task<MenuItemResponse> CreateMenuItemAsync(CreateMenuItemRequest createMenuItemRequest)
     {
-        await IsExistGeneric(x => x.Label.ToLower().Trim() == createMenuItemRequest.Label.ToLower().Trim());
+        await IsExistGeneric(x => x.Label.Trim() == createMenuItemRequest.Label.Trim());
 
         await IsExistOrderNumber(createMenuItemRequest.OrderNumber);
 
@@ -46,9 +47,8 @@ public class MenuItemRepository : IMenuItemRepository
         return menuItemResponse;
     }
 
-
     #endregion
- 
+
     #region DeleteMenuItem
 
     public async Task<Guid> DeleteMenuItemAsync(Guid menuItemId)
@@ -65,7 +65,6 @@ public class MenuItemRepository : IMenuItemRepository
         return entity.MenuItemId;
     }
 
-
     #endregion
 
     #region GetMenuItem
@@ -78,34 +77,50 @@ public class MenuItemRepository : IMenuItemRepository
                        ?? throw new NotFoundException(MenuItemExceptionMessages.NotFound);
 
         var menuItemResponse = _mapper.Map<GetMenuItemResponse>(menuItem);
-        
+
         return menuItemResponse;
     }
 
-
     #endregion
- 
+
     #region GetMenuItems
 
-    public async Task<List<GetMenuItemsResponse>> GetMenuItemsAsync()
+    public async Task<List<GetMenuItemsResponse>> GetMenuItemsAsync(
+        Expression<Func<GetMenuItemResponse, bool>>? predicate = null)
     {
+        var menuItems = _applicationDbContext.MenuItems
+            .AsNoTracking();
+
+        if (predicate != null) 
+        {
+            var menuItemPredicate = _mapper.MapExpression<Expression<Func<MenuItem, bool>>>(predicate);
+            menuItems = menuItems.Where(menuItemPredicate);
+        }
+
         var entity = await _applicationDbContext.MenuItems
             .AsNoTracking()
+            .ToListAsync();
+
+        var menuItemsList = await menuItems
             .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();
 
-        var menuItemResponse = _mapper.Map<List<GetMenuItemsResponse>>(entity);
+        var menuItemResponse = _mapper.Map<List<GetMenuItemsResponse>>(menuItemsList);
 
         return menuItemResponse;
     }
 
-
     #endregion
-  
+
     #region UpdateMenuItem
 
     public async Task<MenuItemResponse> UpdateMenuItemAsync(UpdateMenuItemRequest updateMenuItemRequest)
     {
+        await IsExistGeneric(x => x.Label == updateMenuItemRequest.Label);
+
+        await IsExistWhenUpdate(updateMenuItemRequest.MenuItemId, updateMenuItemRequest.OrderNumber,
+            updateMenuItemRequest.Label);
+
         var menuItem = await _applicationDbContext.MenuItems
                            .Where(x => x.MenuItemId == updateMenuItemRequest.MenuItemId)
                            .FirstOrDefaultAsync()
@@ -126,15 +141,14 @@ public class MenuItemRepository : IMenuItemRepository
         return menuItemResponse;
     }
 
-
     #endregion
-  
+
     #region IsExist
 
     private async Task<bool> IsExistGeneric(Expression<Func<MenuItem, bool>> filter)
     {
         var result = await _applicationDbContext.MenuItems.AnyAsync(filter);
-        
+
         if (result)
             throw new ConflictException("Menu item already exists");
 
@@ -149,14 +163,14 @@ public class MenuItemRepository : IMenuItemRepository
         if (isExistOrderNumber)
             throw new ConflictException(MenuItemExceptionMessages.OrderNumberConflict);
     }
-    
+
     private async Task IsExistWhenUpdate(Guid menuItemId, int orderNumber, string label)
     {
         var isExistOrderNumber = await _applicationDbContext.MenuItems
             .AnyAsync(x => x.MenuItemId != menuItemId && x.OrderNumber == orderNumber);
-        
+
         var isExistMenuItem = await _applicationDbContext.MenuItems
-            .AnyAsync(x=> x.MenuItemId != menuItemId && x.Label.ToLower().Trim() == label.ToLower().Trim());
+            .AnyAsync(x => x.MenuItemId != menuItemId && x.Label.Trim() == label.Trim());
 
         if (isExistOrderNumber)
         {
@@ -168,9 +182,6 @@ public class MenuItemRepository : IMenuItemRepository
             throw new ConflictException("Menu item already exists");
         }
     }
-    
+
     #endregion
-    
-   
-    
 }

@@ -44,8 +44,7 @@ public class UserRepository : IUserRepository
     public async Task<UserResponse> DeleteUser(Guid userId)
     {
         var deletedUser = _applicationDbContext.Users
-        .Where(x => x.Id == userId)
-        .FirstOrDefault()
+        .FirstOrDefault(x => x.Id == userId)
         ?? throw new NotFoundException(UserExceptionMessage.NotFound);
 
         _applicationDbContext.Users.Remove(deletedUser);

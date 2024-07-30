@@ -34,6 +34,13 @@ public class SliderController : ControllerBase
         return Ok(sliders);
     }
 
+    [HttpGet("GetActive")]
+    public async Task<IActionResult> GetActiveSliders()
+    {
+        var sliders = await _mediator.Send(new GetActiveSlidersQuery());
+        return Ok(sliders);
+    }
+
     [HttpGet("{sliderId:guid}")]
     public async Task<IActionResult> GetSlider(Guid sliderId)
     {

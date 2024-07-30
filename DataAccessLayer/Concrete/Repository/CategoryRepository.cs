@@ -21,10 +21,20 @@ public class CategoryRepository : ICategoryRepository
     }
 
     #region GetCategories
-    public async Task<List<GetCategoriesResponse>> GetCategories()
+
+    public async Task<List<GetCategoriesResponse>> GetCategories(
+        Expression<Func<GetCategoryResponse, bool>>? predicate = null)
     {
-        var categories = await _applicationDbContext.Categories
-            .AsNoTracking()
+        var categories = _applicationDbContext.Categories
+            .AsNoTracking();
+
+        if (predicate != null)
+        {
+            var categoriesPredicate = _mapper.Map<Expression<Func<Category, bool>>>(predicate);
+            categories = categories.Where(categoriesPredicate);
+        }
+
+        var categoriesList = await categories
             .Include(x => x.SubCategories)
             .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .Select(x => new GetCategoriesResponse
@@ -42,31 +52,35 @@ public class CategoryRepository : ICategoryRepository
                     IsActive = y.IsActive
                 }).ToList()
             }).ToListAsync();
-        
-        var categoriesResponse = _mapper.Map<List<GetCategoriesResponse>>(categories);
-        
+
+        var categoriesResponse = _mapper.Map<List<GetCategoriesResponse>>(categoriesList);
+
         return categoriesResponse;
     }
+
     #endregion
 
     #region GetCategory
+
     public async Task<GetCategoryResponse> GetCategory(Guid categoryId)
     {
         var category = await _applicationDbContext.Categories
-        .AsNoTracking()
-        .Where(x => x.CategoryId == categoryId)
-        .FirstOrDefaultAsync()
-        ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
+                           .AsNoTracking()
+                           .Where(x => x.CategoryId == categoryId)
+                           .FirstOrDefaultAsync()
+                       ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
 
         var categoryResponse = _mapper.Map<GetCategoryResponse>(category);
         return categoryResponse;
     }
+
     #endregion
 
     #region CreateCategory
+
     public async Task<CategoryResponse> CreateCategory(CreateCategoryRequest createCategoryRequest)
     {
-        await IsExistGeneric(x => x.Name.ToLower().Trim() == createCategoryRequest.Name.ToLower().Trim());
+        await IsExistGeneric(x => x.Name.Trim() == createCategoryRequest.Name.Trim());
 
         await IsExistOrderNumber(createCategoryRequest.OrderNumber);
 
@@ -88,15 +102,17 @@ public class CategoryRepository : ICategoryRepository
 
         return categoryResponse;
     }
+
     #endregion
 
     #region UpdateCategory
+
     public async Task<CategoryResponse> UpdateCategory(UpdateCategoryRequest updateCategoryRequest)
     {
         var category = await _applicationDbContext.Categories
-        .Where(x => x.CategoryId == updateCategoryRequest.CategoryId)
-        .FirstOrDefaultAsync()
-        ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
+                           .Where(x => x.CategoryId == updateCategoryRequest.CategoryId)
+                           .FirstOrDefaultAsync()
+                       ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
 
         await IsExistWhenUpdate(updateCategoryRequest.CategoryId, updateCategoryRequest.OrderNumber, updateCategoryRequest.Name);
 
@@ -106,22 +122,24 @@ public class CategoryRepository : ICategoryRepository
         category.OrderNumber = updateCategoryRequest.OrderNumber;
         category.ImageHorizontalUrl = updateCategoryRequest.ImageHorizontalUrl.Trim();
         category.ImageSquareUrl = updateCategoryRequest.ImageSquareUrl.Trim();
-        category.IsActive =  true;
+        category.IsActive = true;
 
         await _applicationDbContext.SaveChangesAsync();
 
         var categoryResponse = _mapper.Map<CategoryResponse>(category);
         return categoryResponse;
     }
+
     #endregion
 
     #region DeleteCategory
+
     public async Task<Guid> DeleteCategory(Guid categoryId)
     {
         var category = await _applicationDbContext.Categories
-        .Where(x => x.CategoryId == categoryId)
-        .FirstOrDefaultAsync()
-        ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
+                           .Where(x => x.CategoryId == categoryId)
+                           .FirstOrDefaultAsync()
+                       ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
 
         await IsUsedCategory(categoryId);
 
@@ -131,9 +149,11 @@ public class CategoryRepository : ICategoryRepository
 
         return category.CategoryId;
     }
+
     #endregion
 
     #region IsExistCategory
+
     private async Task IsExistOrderNumber(int orderNumber)
     {
         var isExistOrderNumber = await _applicationDbContext.Categories
@@ -144,14 +164,14 @@ public class CategoryRepository : ICategoryRepository
             throw new ConflictException(CategoryExceptionMessages.OrderNumberConflict);
         }
     }
-    
+
     private async Task IsExistWhenUpdate(Guid categoryId, int orderNumber, string name)
     {
         var isExistOrderNumber = await _applicationDbContext.Categories
             .AnyAsync(x => x.CategoryId != categoryId && x.OrderNumber == orderNumber);
         
         var isExistCategory = await _applicationDbContext.Categories
-            .AnyAsync(x=> x.CategoryId != categoryId && x.Name.ToLower().Trim() == name.ToLower().Trim());
+            .AnyAsync(x=> x.CategoryId != categoryId && x.Name.Trim() == name.Trim());
 
         if (isExistOrderNumber)
         {
@@ -177,15 +197,17 @@ public class CategoryRepository : ICategoryRepository
     #endregion
 
     #region IsUsedCategory
+
     private async Task IsUsedCategory(Guid categoryId)
     {
         var isUsed = await _applicationDbContext.SubCategories
-        .AnyAsync(x => x.CategoryId == categoryId);
+            .AnyAsync(x => x.CategoryId == categoryId);
 
         if (isUsed)
         {
             throw new IsUsedException("Category is used");
         }
     }
+
     #endregion
 }

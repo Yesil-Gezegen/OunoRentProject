@@ -24,11 +24,27 @@ public class MenuItemsControllerTests : IClassFixture<WebApplicationFactory<Prog
     {
         //Act
         var response = await _client.GetAsync("/api/MenuItem");
-        var content = await response.Content.ReadAsStringAsync();
-
+        var content = await response.Content.ReadFromJsonAsync<List<GetMenuItemsResponse>>();
+        
         //Assert
         response.EnsureSuccessStatusCode();
         Assert.NotNull(content);
+    }
+
+    [Fact]
+    public async Task GetActiveMenuItems_ReturnsSuccess()
+    {
+        //Act
+        var response = await _client.GetAsync("/api/MenuItem/GetActive");
+        var content = await response.Content.ReadFromJsonAsync<List<GetMenuItemsResponse>>();
+        
+        //Assert
+        response.EnsureSuccessStatusCode();
+        Assert.NotNull(content);
+        foreach (var item in content)
+        {
+            Assert.True(item.IsActive);
+        }
     }
     #endregion
 
@@ -219,7 +235,7 @@ public class MenuItemsControllerTests : IClassFixture<WebApplicationFactory<Prog
         var getResponse = await _client.GetAsync("/api/MenuItem");
         var getContent = await getResponse.Content.ReadFromJsonAsync<List<GetMenuItemsResponse>>();
 
-        var activeMenuItemOrderNumber = getContent.FirstOrDefault(mi => mi.IsActive).OrderNumber;
+        var activeMenuItemOrderNumber = getContent.LastOrDefault().OrderNumber;
         var menuItem = getContent.FirstOrDefault();
 
         var faker = new Faker<UpdateMenuItemRequest>()

@@ -4,18 +4,18 @@ using Shared.Interface;
 
 namespace BusinessLayer.CQRS.Blog.Query;
 
-public sealed record GetBlogCommand(Guid Id) : IRequest<GetBlogResponse>;
+public sealed record GetBlogQuery(Guid Id) : IRequest<GetBlogResponse>;
 
-public class GetBlogCommandHandle : IRequestHandler<GetBlogCommand, GetBlogResponse>
+public class GetBlogQueryHandler : IRequestHandler<GetBlogQuery, GetBlogResponse>
 {
     private readonly IBlogRepository _blogRepository;
 
-    public GetBlogCommandHandle(IBlogRepository blogRepository)
+    public GetBlogQueryHandler(IBlogRepository blogRepository)
     {
         _blogRepository = blogRepository;
     }
 
-    public async Task<GetBlogResponse> Handle(GetBlogCommand request, CancellationToken cancellationToken)
+    public async Task<GetBlogResponse> Handle(GetBlogQuery request, CancellationToken cancellationToken)
     {
         var result = await _blogRepository.GetBlogAsync(request.Id);
         return result;

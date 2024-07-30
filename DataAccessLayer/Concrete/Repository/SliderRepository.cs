@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.Middlewares;
 using EntityLayer.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -86,15 +87,23 @@ public class SliderRepository : ISliderRepository
 
     #region GetSliders
 
-    public async Task<List<GetSlidersResponse>> GetSliders()
+    public async Task<List<GetSlidersResponse>> GetSliders(Expression<Func<GetSliderResponse, bool>>? predicate = null)
     {
-        var sliders = await _applicationDbContext.Sliders
-            .AsNoTracking()
+        var sliders = _applicationDbContext.Sliders
+            .AsNoTracking();
+
+        if (predicate != null)
+        {
+            var slidersPredicate = _mapper.MapExpression<Expression<Func<Slider, bool>>>(predicate);
+            sliders = sliders.Where(slidersPredicate);
+        }
+        
+        var slidersList = await sliders
             .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();
-
-        var getSlidersResponse = _mapper.Map<List<GetSlidersResponse>>(sliders);
-
+        
+        var getSlidersResponse = _mapper.Map<List<GetSlidersResponse>>(slidersList);
+        
         return getSlidersResponse;
     }
 

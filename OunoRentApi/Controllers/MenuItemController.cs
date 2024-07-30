@@ -24,6 +24,13 @@ public class MenuItemController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("GetActive")]
+    public async Task<ActionResult> GetActiveMenuItems()
+    {
+        var result = await _mediator.Send(new GetActiveMenuItemsQuery());
+        return Ok(result);
+    }
+
     [HttpGet("{menuItemId:guid}")]
     public async Task<ActionResult> GetMenuItem(Guid menuItemId)
     {

@@ -88,6 +88,22 @@ public class SliderControllerTests : IClassFixture<WebApplicationFactory<Program
         //Assert
         Assert.NotNull(content);
     }
+    
+    [Fact]
+    public async Task GetActiveSliders_ReturnSuccessAsync()
+    {
+        //Act
+        var response = await _client.GetAsync("/api/slider/GetActive");
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadFromJsonAsync<List<GetSlidersResponse>>();
+
+        //Assert
+        Assert.NotNull(content);
+        foreach (var item in content)
+        {
+            Assert.True(item.IsActive);
+        }
+    }
     #endregion
 
     #region GetSlider

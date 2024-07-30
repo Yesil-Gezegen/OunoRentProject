@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Shared.DTO.SubCategory.Request;
 using Shared.DTO.SubCategory.Response;
@@ -13,7 +14,8 @@ public interface ISubCategoryRepository
 
     Task<GetSubCategoryResponse> GetSubCategory(Guid CategoryId, Guid SubCategoryId);
 
-    Task<List<GetSubCategoriesResponse>> GetSubCategories(Guid CategoryId);
+    Task<List<GetSubCategoriesResponse>> GetSubCategories(Guid CategoryId,
+        Expression<Func<GetSubCategoryResponse, bool>>? predicate = null);
 
     Task<SubCategoryResponse> UpdateSubCategory(Guid CategoryId, UpdateSubCategoryRequest updateSubCategoryRequest);
 
