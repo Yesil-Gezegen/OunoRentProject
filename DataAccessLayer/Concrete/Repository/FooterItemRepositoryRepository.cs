@@ -32,7 +32,7 @@ public class FooterItemRepository : IFooterItemRepository
         var footerItem = new FooterItem();
         
         footerItem.Label = footerItemRequest.Label.Trim();
-        footerItem.Column = footerItemRequest.Column.Trim();
+        footerItem.Column = footerItemRequest.Column;
         footerItem.OrderNumber = footerItemRequest.OrderNumber;
         footerItem.TargetUrl = footerItemRequest.TargetUrl.Trim();
         footerItem.IsActive = footerItemRequest.IsActive;
@@ -44,6 +44,57 @@ public class FooterItemRepository : IFooterItemRepository
         return _mapper.Map<FooterItemResponse>(footerItem);
     }
 
+    public async Task<List<GetFooterItemsResponse>> GetFooterItems()
+    {
+        var footerItemList = await _applicationDbContext.FooterItems
+            .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
+            .ToListAsync();
+        
+        return _mapper.Map<List<GetFooterItemsResponse>>(footerItemList);
+    }
+
+    public async Task<GetFooterItemResponse> GetFooterItem(Guid footerItemId)
+    {
+        var footerItem = await _applicationDbContext.FooterItems
+            .FirstOrDefaultAsync(x=> x.FooterItemId == footerItemId);
+        
+        return _mapper.Map<GetFooterItemResponse>(footerItem);
+        
+    }
+
+    public async Task<FooterItemResponse> UpdateFooterItem(UpdateFooterItemRequest updateFooterItemRequest)
+    {
+        var footerItem = await _applicationDbContext.FooterItems
+                             .FirstOrDefaultAsync(x => x.FooterItemId == updateFooterItemRequest.FooterItemId)
+                         ?? throw new NotFoundException(FooterItemExceptionMessages.NotFound);
+        
+        await IsExistWhenUpdate(updateFooterItemRequest.FooterItemId, updateFooterItemRequest.OrderNumber, updateFooterItemRequest.Label);
+        
+        footerItem.Label = updateFooterItemRequest.Label.Trim();
+        footerItem.Column = updateFooterItemRequest.Column;
+        footerItem.OrderNumber = updateFooterItemRequest.OrderNumber;
+        footerItem.TargetUrl = updateFooterItemRequest.TargetUrl.Trim();
+        footerItem.IsActive = updateFooterItemRequest.IsActive;
+
+        _applicationDbContext.FooterItems.Update(footerItem);
+        
+        await _applicationDbContext.SaveChangesAsync();
+        
+        return _mapper.Map<FooterItemResponse>(footerItem);
+    }
+
+    public async Task<Guid> DeleteFooterItem(Guid footerItemId)
+    {
+        var footerItem = await _applicationDbContext.FooterItems
+            .FirstOrDefaultAsync(x => x.FooterItemId == footerItemId)
+            ?? throw new NotFoundException(FooterItemExceptionMessages.NotFound);
+        
+        _applicationDbContext.FooterItems.Remove(footerItem);
+        
+        await _applicationDbContext.SaveChangesAsync();
+
+        return footerItem.FooterItemId;
+    }
 
     #endregion
 
@@ -66,6 +117,26 @@ public class FooterItemRepository : IFooterItemRepository
             throw new ConflictException(BlogExceptionMessages.Conflict);
 
         return result;
+    }
+    
+    private async Task IsExistWhenUpdate(Guid footerItemId, int orderNumber, string label)
+    {
+        var isExistOrderNumber = await _applicationDbContext.FooterItems
+            .AnyAsync(x => x.FooterItemId != footerItemId && x.OrderNumber == orderNumber);
+        
+        var isExistFooterItem = await _applicationDbContext.FooterItems
+            .AnyAsync(x=> x.FooterItemId != footerItemId &&
+                          x.Label.Trim() == label.Trim());
+
+        if (isExistOrderNumber)
+        {
+            throw new ConflictException(FooterItemExceptionMessages.OrderNumberConflict);
+        }
+
+        if (isExistFooterItem)
+        {
+            throw new ConflictException(FooterItemExceptionMessages.Conflict);
+        }
     }
 
     #endregion

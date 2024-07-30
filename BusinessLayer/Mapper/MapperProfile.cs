@@ -44,5 +44,7 @@ public class MapperProfile : Profile
 		CreateMap<MenuItem, GetMenuItemsResponse>();
 
 		CreateMap<FooterItem, FooterItemResponse>();
+		CreateMap<FooterItem, GetFooterItemsResponse>();
+		CreateMap<FooterItem, GetFooterItemResponse>();
 	}
 }

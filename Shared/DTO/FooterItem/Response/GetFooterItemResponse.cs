@@ -1,12 +1,12 @@
-namespace EntityLayer.Entities;
+namespace Shared.DTO.FooterItem.Response;
 
-public class FooterItem : AuditTrailer
+public class GetFooterItemResponse
 {
     public Guid FooterItemId { get; set; }
 
     public string Label { get; set; }
 
-    public int Column { get; set; }
+    public string Column { get; set; }
 
     public int OrderNumber { get; set; }
 
