@@ -47,6 +47,12 @@ public class AuthenticationExceptionMessage
     public const string InvalidToken = "Invalid Token";
 }
 
+public class FeaturedCategoryExceptionMessages
+{
+    public const string CategoryConflict = "The same category cannot be highlighted twice.";
+    public const string OrderNumberConflict = "Two featured category cannot have the same order number.";
+}
+
 public class FooterItemExceptionMessages
 {
     public const string NotFound = "Footer item not found";

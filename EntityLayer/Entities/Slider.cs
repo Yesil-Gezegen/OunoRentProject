@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace EntityLayer.Entities;
 
 public class Slider : AuditTrailer
 {
+    [Key]
     public Guid SliderId { get; set; }
 
     public string MainImageUrl { get; set; }

@@ -1,4 +1,5 @@
 // DataAccessLayer/Concrete/ApplicationDbContext.cs
+
 using Microsoft.EntityFrameworkCore;
 using EntityLayer.Entities;
 using EntityLayer;
@@ -7,7 +8,9 @@ namespace DataAccessLayer.Concrete;
 
 public class ApplicationDbContext : DbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    {
+    }
 
     public DbSet<Category> Categories { get; set; }
     public DbSet<User> Users { get; set; }
@@ -15,6 +18,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Blog> Blogs { get; set; }
     public DbSet<SubCategory> SubCategories { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
+    public DbSet<FeaturedCategory> FeaturedCategories { get; set; }
+    public DbSet<FAQ> FAQ { get; set; }
 
     public DbSet<FooterItem> FooterItems { get; set; }
 
@@ -35,7 +40,8 @@ public class ApplicationDbContext : DbContext
     /// </summary>
     private void UpdateAuditInformation()
     {
-        var entries = ChangeTracker.Entries().Where(e => e.Entity is AuditTrailer && (e.State == EntityState.Added || e.State == EntityState.Modified));
+        var entries = ChangeTracker.Entries().Where(e =>
+            e.Entity is AuditTrailer && (e.State == EntityState.Added || e.State == EntityState.Modified));
 
         foreach (var entry in entries)
         {
