@@ -80,7 +80,7 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<CategoryResponse> CreateCategory(CreateCategoryRequest createCategoryRequest)
     {
-        await IsExistGeneric(x => x.Name.ToLower().Trim() == createCategoryRequest.Name.ToLower().Trim());
+        await IsExistGeneric(x => x.Name.Trim() == createCategoryRequest.Name.Trim());
 
         await IsExistOrderNumber(createCategoryRequest.OrderNumber);
 
@@ -171,7 +171,7 @@ public class CategoryRepository : ICategoryRepository
             .AnyAsync(x => x.CategoryId != categoryId && x.OrderNumber == orderNumber);
         
         var isExistCategory = await _applicationDbContext.Categories
-            .AnyAsync(x=> x.CategoryId != categoryId && x.Name.ToLower().Trim() == name.ToLower().Trim());
+            .AnyAsync(x=> x.CategoryId != categoryId && x.Name.Trim() == name.Trim());
 
         if (isExistOrderNumber)
         {

@@ -25,7 +25,7 @@ public class MenuItemRepository : IMenuItemRepository
 
     public async Task<MenuItemResponse> CreateMenuItemAsync(CreateMenuItemRequest createMenuItemRequest)
     {
-        await IsExistGeneric(x => x.Label.ToLower().Trim() == createMenuItemRequest.Label.ToLower().Trim());
+        await IsExistGeneric(x => x.Label.Trim() == createMenuItemRequest.Label.Trim());
 
         await IsExistOrderNumber(createMenuItemRequest.OrderNumber);
 
@@ -91,7 +91,7 @@ public class MenuItemRepository : IMenuItemRepository
         var menuItems = _applicationDbContext.MenuItems
             .AsNoTracking();
 
-        if (predicate != null)
+        if (predicate != null) 
         {
             var menuItemPredicate = _mapper.MapExpression<Expression<Func<MenuItem, bool>>>(predicate);
             menuItems = menuItems.Where(menuItemPredicate);
@@ -170,7 +170,7 @@ public class MenuItemRepository : IMenuItemRepository
             .AnyAsync(x => x.MenuItemId != menuItemId && x.OrderNumber == orderNumber);
 
         var isExistMenuItem = await _applicationDbContext.MenuItems
-            .AnyAsync(x => x.MenuItemId != menuItemId && x.Label.ToLower().Trim() == label.ToLower().Trim());
+            .AnyAsync(x => x.MenuItemId != menuItemId && x.Label.Trim() == label.Trim());
 
         if (isExistOrderNumber)
         {

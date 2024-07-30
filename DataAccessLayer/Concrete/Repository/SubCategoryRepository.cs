@@ -25,13 +25,13 @@ public class SubCategoryRepository : ISubCategoryRepository
         _applicationDbContext = applicationDbContext;
         _mapper = mapper;
     }
-
+ 
     #region CreateSubCategory
 
     public async Task<SubCategoryResponse> CreateSubCategory(Guid categoryId,
         CreateSubCategoryRequest createSubCategoryRequest)
     {
-        await IsExistGeneric(x=> x.Name.ToLower().Trim() == createSubCategoryRequest.Name.ToLower().Trim());
+        await IsExistGeneric(x=> x.Name.Trim() == createSubCategoryRequest.Name.Trim());
 
         await IsExistOrderNumber(createSubCategoryRequest.OrderNumber);
 
@@ -178,7 +178,7 @@ public class SubCategoryRepository : ISubCategoryRepository
             .AnyAsync(x => x.SubCategoryId != subCategoryId && x.OrderNumber == orderNumber);
         
         var isExistSubCategory = await _applicationDbContext.SubCategories
-            .AnyAsync(x=> x.SubCategoryId != subCategoryId && x.Name.ToLower().Trim() == name.ToLower().Trim());
+            .AnyAsync(x=> x.SubCategoryId != subCategoryId && x.Name.Trim() == name.Trim());
 
         if (isExistOrderNumber)
         {
