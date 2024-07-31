@@ -35,7 +35,11 @@ public static class ServiceExtensions
         services.AddScoped<IBlogRepository, BlogRepository>();
         services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
         services.AddScoped<IMenuItemRepository, MenuItemRepository>();
+        services.AddScoped<IFeaturedCategoryRepository, FeaturedCategoryRepository>();
         services.AddScoped<IFooterItemRepository, FooterItemRepository>();
+        services.AddScoped<IFAQRepository, FAQRepository>();
+        services.AddScoped<IContactFormRepository, ContactFormRepository>();
+        services.AddScoped<IBrandRepository, BrandRepository>();
     }
 
     /// <summary>

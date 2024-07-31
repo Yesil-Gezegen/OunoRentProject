@@ -1,9 +1,11 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace EntityLayer.Entities;
 
 public class Blog : AuditTrailer
 {
+    [Key]
     public Guid BlogId { get; set; }
     public string Title { get; set; }
     public string Body { get; set; }

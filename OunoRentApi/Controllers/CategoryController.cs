@@ -11,7 +11,7 @@ using Shared.DTO.SubCategory.Request;
 namespace OunoRentApi.Controllers.CategoryController;
 
 [ApiController]
-[Route("api/category")]
+[Route("api/[controller]")]
 public class CategoryController : ControllerBase
 {
     private readonly IMediator _mediator;

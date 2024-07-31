@@ -2,13 +2,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EntityLayer.Entities;
 
-public class MenuItem : AuditTrailer
+public class FAQ : AuditTrailer
 {
     [Key]
-    public Guid MenuItemId { get; set; }
+    public Guid FAQId { get; set; }
     public string Label { get; set; }
-    public string TargetUrl { get; set; }
+    public string Text { get; set; }
     public int OrderNumber { get; set; }
-    public bool OnlyToMembers { get; set; }
     public bool IsActive { get; set; }
 }
