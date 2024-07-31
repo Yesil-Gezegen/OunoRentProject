@@ -78,3 +78,8 @@ public class FAQExceptionMessages
     public const string NotFound = "FAQ not found";
     public const string LabelConflict = "Label already exists";
 }
+
+public class FeatureExceptionMessages
+{
+    public const string NotFound = "Feature not found";
+}

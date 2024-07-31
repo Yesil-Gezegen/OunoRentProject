@@ -24,6 +24,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<FooterItem> FooterItems { get; set; }
 
     public DbSet<ContactForm> ContactForms { get; set; }
+    
+    public DbSet<Feature> Features { get; set; }
 
     public override int SaveChanges()
     {
