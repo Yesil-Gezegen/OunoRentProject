@@ -2,6 +2,8 @@ using BusinessLayer.ActionFilters;
 using BusinessLayer.Extensions;
 using BusinessLayer.Middlewares;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Hosting;
+using OunoRentApi.Swagger;
 
 public class Program
 {
@@ -15,10 +17,12 @@ public class Program
             options.Filters.Add(typeof(ValidateModelAttribute));
         });
 
-        // Swagger yapılandırması
+        // Swagger configuration
         builder.Services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+            
+            c.OperationFilter<FileUploadOperation>();
 
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
@@ -53,23 +57,34 @@ public class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
+            app.UseDeveloperExceptionPage();
             app.UseSwagger();
-             app.UseSwaggerUI(c =>
-             {
-                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                 c.RoutePrefix = string.Empty; 
-             });
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.RoutePrefix = string.Empty; 
+            });
         }
+        else
+        {
+            app.UseExceptionHandler("/Home/Error");
+            app.UseHsts();
+        }
+
+        // Middleware for serving static files
+        app.UseStaticFiles();
 
         app.UseCors("AllowAllOrigin");
 
         app.UseMiddleware<ExceptionMiddleware>();
         app.UseMiddleware<SlidingExpirationMiddleware>();
 
+        app.UseHttpsRedirection();
+        app.UseRouting();
+
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.UseHttpsRedirection();
         app.MapControllers();
 
         app.Run();

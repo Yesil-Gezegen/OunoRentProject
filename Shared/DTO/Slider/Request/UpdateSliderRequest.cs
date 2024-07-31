@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace Shared.DTO.Slider.Request;
 
 public sealed record UpdateSliderRequest(
@@ -10,6 +12,7 @@ public sealed record UpdateSliderRequest(
     int Duration,
     DateTime ActiveFrom,
     DateTime ActiveTo,
-    bool IsActive
+    bool IsActive,
+    IFormFile File
 );
 

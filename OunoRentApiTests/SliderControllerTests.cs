@@ -31,7 +31,8 @@ public class SliderControllerTests : IClassFixture<WebApplicationFactory<Program
                 OrderNumber: f.Random.Int(1, 10000),
                 ActiveFrom: f.Date.Past().ToUniversalTime(),
                 ActiveTo: f.Date.Future().ToUniversalTime(),
-                IsActive: f.Random.Bool()
+                IsActive: f.Random.Bool(),
+                File: null
             ));
 
         var fakeSlider = faker.Generate();
@@ -60,7 +61,8 @@ public class SliderControllerTests : IClassFixture<WebApplicationFactory<Program
                 OrderNumber: f.Random.Int(1, 10000),
                 ActiveFrom: f.Date.Past(),
                 ActiveTo: f.Date.Future(),
-                IsActive: f.Random.Bool()
+                IsActive: f.Random.Bool(),
+                File: null
             ));
 
         var fakeSlider = faker.Generate();
@@ -152,7 +154,8 @@ public class SliderControllerTests : IClassFixture<WebApplicationFactory<Program
                 OrderNumber: f.Random.Int(1, 10000),
                 ActiveFrom: f.Date.Past().ToUniversalTime(),
                 ActiveTo: f.Date.Future().ToUniversalTime(),
-                IsActive: f.Random.Bool()
+                IsActive: f.Random.Bool(),
+                File: null
             ));
 
         var fakeSlider = faker.Generate();
@@ -197,7 +200,8 @@ public class SliderControllerTests : IClassFixture<WebApplicationFactory<Program
                 OrderNumber: f.Random.Int(1, 10000),
                 ActiveFrom: f.Date.Past().ToUniversalTime(),
                 ActiveTo: f.Date.Future().ToUniversalTime(),
-                IsActive: f.Random.Bool()
+                IsActive: f.Random.Bool(),
+                File: null
             ));
 
         var fakeSlider = faker.Generate();

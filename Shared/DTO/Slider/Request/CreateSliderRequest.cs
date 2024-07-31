@@ -1,5 +1,5 @@
 namespace Shared.DTO.Slider.Request;
-
+using Microsoft.AspNetCore.Http;
 public sealed record CreateSliderRequest(
     string Title,
     string MainImageUrl,
@@ -9,5 +9,6 @@ public sealed record CreateSliderRequest(
     int Duration,
     DateTime ActiveFrom,
     DateTime ActiveTo,
-    bool IsActive
+    bool IsActive,
+    IFormFile File
 );

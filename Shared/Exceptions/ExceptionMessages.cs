@@ -79,6 +79,15 @@ public class FAQExceptionMessages
     public const string LabelConflict = "Label already exists";
 }
 
+public class ImageExceptionMessages
+{
+    public const string NotFound = "Image not found";
+    public const string InvalidImage = "Invalid image";
+    public const string InvalidPath = "Invalid path";
+    public const string InvalidName = "Invalid file name";
+    
+}
+
 public class FeatureExceptionMessages
 {
     public const string NotFound = "Feature not found";
