@@ -39,6 +39,7 @@ public static class ServiceExtensions
         services.AddScoped<IFooterItemRepository, FooterItemRepository>();
         services.AddScoped<IFAQRepository, FAQRepository>();
         services.AddScoped<IContactFormRepository, ContactFormRepository>();
+        services.AddScoped<IBrandRepository, BrandRepository>();
     }
 
     /// <summary>

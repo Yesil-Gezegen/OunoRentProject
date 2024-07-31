@@ -30,14 +30,14 @@ public class ContactFormController : ControllerBase
         return Ok(result);
     }
     
-    [HttpGet("{contactFormId}")]
+    [HttpGet("{contactFormId:guid}")]
     public async Task<IActionResult> GetContactForm(Guid contactFormId)
     {
         var result = await _mediator.Send(new GetContactFormQuery(contactFormId));
         return Ok(result);
     }
     
-    [HttpDelete("{contactFormId}")]
+    [HttpDelete("{contactFormId:guid}")]
     public async Task<IActionResult> DeleteContactForm(Guid contactFormId)
     {
         var result = await _mediator.Send(new DeleteContactFormCommand(contactFormId));

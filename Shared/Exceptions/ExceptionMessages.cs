@@ -3,14 +3,14 @@ namespace BusinessLayer.Middlewares;
 public class BlogExceptionMessages
 {
     public const string NotFound = "SubCategory not found";
-    public const string Conflict = "Already exist";
+    public const string Conflict = "Blog Already exist";
     public const string OrderNumberConflict = "Order number already exists";
 }
 
 public class CategoryExceptionMessages
 {
     public const string NotFound = "Category not found";
-    public const string Conflict = "Already exist";
+    public const string Conflict = "Category Already exist";
     public const string OrderNumberConflict = "Order number already exists";
 }
 
@@ -23,14 +23,14 @@ public class MenuItemExceptionMessages
 public class SliderExceptionMessages
 {
     public const string NotFound = "Slider not found";
-    public const string Conflict = "Already exist";
+    public const string Conflict = "Slider Already exist";
     public const string OrderNumberConflict = "Order number already exists";
 }
 
 public class SubCategoryExceptionMessages
 {
     public const string NotFound = "SubCategory not found";
-    public const string Conflict = "Already exist";
+    public const string Conflict = "SubCategory Already exist";
     public const string OrderNumberConflict = "Order number already exists";
 }
 
@@ -61,9 +61,16 @@ public class FeaturedCategoryExceptionMessages
 public class FooterItemExceptionMessages
 {
     public const string NotFound = "Footer item not found";
-    public const string Conflict = "Already exist";
+    public const string Conflict = "Footer Item Already exist";
     public const string OrderNumberConflict = "Order number already exists";
 }
+
+public class BrandExceptionMessages
+{
+    public const string NotFound = "Brand not found";
+    public const string Conflict = "Brand Already exist";
+}
+
 
 public class FAQExceptionMessages
 {

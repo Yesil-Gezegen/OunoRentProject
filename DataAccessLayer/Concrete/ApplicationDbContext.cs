@@ -16,7 +16,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<SubCategory> SubCategories { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
     public DbSet<FeaturedCategory> FeaturedCategories { get; set; }
+    
     public DbSet<FAQ> FAQ { get; set; }
+    
+    public DbSet<Brand> Brands { get; set; }
 
     public DbSet<FooterItem> FooterItems { get; set; }
 
