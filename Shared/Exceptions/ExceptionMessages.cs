@@ -64,3 +64,10 @@ public class FooterItemExceptionMessages
     public const string Conflict = "Already exist";
     public const string OrderNumberConflict = "Order number already exists";
 }
+
+public class FAQExceptionMessages
+{
+    public const string OrderNumberConflict = "Order number already exists";
+    public const string NotFound = "FAQ not found";
+    public const string LabelConflict = "Label already exists";
+}
