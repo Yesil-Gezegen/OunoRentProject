@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace EntityLayer.Entities;
 
 public class FooterItem : AuditTrailer
 {
+    [Key]
     public Guid FooterItemId { get; set; }
 
     public string Label { get; set; }

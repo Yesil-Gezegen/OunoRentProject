@@ -6,6 +6,7 @@ using Shared.DTO.Authentication.Response;
 using Shared.DTO.Slider.Response;
 using Shared.DTO.Blog.Response;
 using Shared.DTO.Blog.Request;
+using Shared.DTO.ContactForm.Response;
 using Shared.DTO.FeaturedCategories.Response;
 using Shared.DTO.FooterItem.Response;
 using Shared.DTO.SubCategory.Response;
@@ -53,5 +54,9 @@ public class MapperProfile : Profile
 		CreateMap<FooterItem, FooterItemResponse>();
 		CreateMap<FooterItem, GetFooterItemsResponse>();
 		CreateMap<FooterItem, GetFooterItemResponse>();
+
+		CreateMap<ContactForm, ContactFormResponse>();
+		CreateMap<ContactForm, GetContactFormsResponse>();
+		CreateMap<ContactForm, GetContactFormResponse>();
 	}
 }
