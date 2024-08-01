@@ -24,32 +24,56 @@ public class MapperProfile : Profile
 {
     public MapperProfile()
     {
+        #region Category
+
         CreateMap<Category, GetCategoriesResponse>();
         CreateMap<Category, GetCategoryResponse>();
         CreateMap<Category, CategoryResponse>();
 
+        #endregion
+
+        #region Slider
+
         CreateMap<Slider, SliderResponse>();
         CreateMap<Slider, GetSlidersResponse>();
         CreateMap<Slider, GetSliderResponse>();
+
+        #endregion
+
+        #region User
 
         CreateMap<User, UserResponse>();
         CreateMap<User, GetUserResponse>();
         CreateMap<User, GetUsersResponse>();
         CreateMap<User, UserDetailsResponse>();
 
+        #endregion
+
+        #region SubCategory
+
         CreateMap<SubCategory, SubCategoryResponse>();
         CreateMap<SubCategory, GetSubCategoriesResponse>();
         CreateMap<SubCategory, GetSubCategoryResponse>();
 
-        CreateMap<Blog, BlogResponse>();
-        CreateMap<Blog, GetBlogResponse>()
-            .ForMember(dest => dest.SubCategoryName, opt => opt.MapFrom(src => src.SubCategory.Name));
-        CreateMap<Blog, GetBlogsResponse>()
-            .ForMember(dest => dest.SubCategoryName, opt => opt.MapFrom(src => src.SubCategory.Name));
+        #endregion
 
+        #region Blog
+
+        CreateMap<Blog, BlogResponse>();
+        CreateMap<Blog, GetBlogResponse>();
+        CreateMap<Blog, GetBlogsResponse>();
+
+        #endregion
+
+        #region MenuItem
+        
         CreateMap<MenuItem, MenuItemResponse>();
         CreateMap<MenuItem, GetMenuItemResponse>();
         CreateMap<MenuItem, GetMenuItemsResponse>();
+
+        #endregion
+
+        #region FeaturedCategory
 
         CreateMap<FeaturedCategory, FeaturedCategoryResponse>();
         CreateMap<FeaturedCategory, GetFeaturedCategoryResponse>()
@@ -57,21 +81,41 @@ public class MapperProfile : Profile
         CreateMap<FeaturedCategory, GetFeaturedCategoriesResponse>()
             .ForMember(dest => dest.GetCategoryResponse, opt => opt.MapFrom(src => src.Category));
 
+        #endregion
+
+        #region FooterItem
+
         CreateMap<FooterItem, FooterItemResponse>();
         CreateMap<FooterItem, GetFooterItemsResponse>();
         CreateMap<FooterItem, GetFooterItemResponse>();
+
+        #endregion
+
+        #region ContactForm
 
         CreateMap<ContactForm, ContactFormResponse>();
         CreateMap<ContactForm, GetContactFormsResponse>();
         CreateMap<ContactForm, GetContactFormResponse>();
 
+        #endregion
+
+        #region Brand
+
         CreateMap<Brand, BrandResponse>();
         CreateMap<Brand, GetBrandsResponse>();
         CreateMap<Brand, GetBrandResponse>();
 
+        #endregion
+
+        #region FAQ
+
         CreateMap<FAQ, FAQResponse>();
         CreateMap<FAQ, GetFAQResponse>();
         CreateMap<FAQ, GetFAQsResponse>();
+
+        #endregion
+
+        #region Feature
 
         CreateMap<Feature, FeatureResponse>();
         CreateMap<Feature, GetFeatureResponse>()
@@ -81,9 +125,17 @@ public class MapperProfile : Profile
             .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
             .ForMember(dest => dest.SubCategory, opt => opt.MapFrom(src => src.SubCategory));
 
+        #endregion
+
+        #region Price
+
         CreateMap<Price, PriceResponse>();
         CreateMap<Price, GetPriceResponse>();
         CreateMap<Price, GetPricesResponse>();
+
+        #endregion
+
+        #region Contract
 
         CreateMap<Contract, ContractResponse>();
         CreateMap<Contract, GetContractResponse>();
@@ -95,5 +147,7 @@ public class MapperProfile : Profile
             .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
         CreateMap<Address, GetAddressesResponse>()
             .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
+        #endregion
+        
     }
 }

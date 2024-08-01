@@ -18,7 +18,9 @@ public class PriceRepository : IPriceRepository
         _applicationDbContext = applicationDbContext;
         _mapper = mapper;
     }
-    
+
+    #region CreatePrice
+
     public async Task<PriceResponse> CreatePrice(CreatePriceRequest createPriceRequest)
     {
         var price = new Price();
@@ -33,7 +35,12 @@ public class PriceRepository : IPriceRepository
         return _mapper.Map<PriceResponse>(price);
     }
 
-    public async Task<List<GetPricesResponse>> GerPrices()
+
+    #endregion
+
+    #region GetPrices
+
+    public async Task<List<GetPricesResponse>> GetPrices()
     {
         var priceList = await _applicationDbContext.Prices
             .AsNoTracking()
@@ -42,6 +49,11 @@ public class PriceRepository : IPriceRepository
 
         return _mapper.Map<List<GetPricesResponse>>(priceList);
     }
+
+
+    #endregion
+
+    #region GetPrice
 
     public async Task<GetPriceResponse> GetPrice(Guid priceId)
     {
@@ -53,10 +65,15 @@ public class PriceRepository : IPriceRepository
         return _mapper.Map<GetPriceResponse>(price);
     }
 
+
+    #endregion
+
+    #region UpdatePrice
+
     public async Task<PriceResponse> UpdatePrice(UpdatePriceRequest updatePriceRequest)
     {
         var price = await _applicationDbContext.Prices
-            .FirstOrDefaultAsync(x=> x.PriceId == updatePriceRequest.PriceId)
+                        .FirstOrDefaultAsync(x=> x.PriceId == updatePriceRequest.PriceId)
                     ?? throw new NotFoundException(PriceExceptionMessages.NotFound);
         
         price.LogoPrice = updatePriceRequest.LogoPrice;
@@ -67,6 +84,11 @@ public class PriceRepository : IPriceRepository
         
         return _mapper.Map<PriceResponse>(price);
     }
+
+
+    #endregion
+
+    #region DeletePrice
 
     public async Task<Guid> DeletePrice(Guid priceId)
     {
@@ -80,4 +102,6 @@ public class PriceRepository : IPriceRepository
         
         return priceId;
     }
+
+    #endregion
 }

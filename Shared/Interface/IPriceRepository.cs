@@ -7,7 +7,7 @@ public interface IPriceRepository
 {
     Task<PriceResponse> CreatePrice(CreatePriceRequest createPriceRequest);
     
-    Task<List<GetPricesResponse>> GerPrices();
+    Task<List<GetPricesResponse>> GetPrices();
     
     Task<GetPriceResponse> GetPrice(Guid priceId);
     

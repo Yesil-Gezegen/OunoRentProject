@@ -19,6 +19,8 @@ public class ContractRepository : IContractRepository
         _mapper = mapper;
     }
 
+    #region CreateContract
+
     public async Task<ContractResponse> CreateContract(CreateContractRequest createContractRequest)
     {
         var contract = new Contract();
@@ -39,11 +41,16 @@ public class ContractRepository : IContractRepository
         return _mapper.Map<ContractResponse>(contract);
     }
 
+
+    #endregion
+
+    #region UpdateContract
+
     public async Task<ContractResponse> UpdateContract(UpdateContractRequest updateContractRequest)
     {
         var contract = await _applicationDbContext.Contracts
-                          .FirstOrDefaultAsync(x => x.ContractId == updateContractRequest.ContractId)
-                      ?? throw new NotFoundException(ContractExceptionMessages.NotFound);
+                           .FirstOrDefaultAsync(x => x.ContractId == updateContractRequest.ContractId)
+                       ?? throw new NotFoundException(ContractExceptionMessages.NotFound);
         
         contract.Name = updateContractRequest.Name.Trim();
         contract.Version = contract.Version + 1;
@@ -60,6 +67,11 @@ public class ContractRepository : IContractRepository
         return _mapper.Map<ContractResponse>(contract);
     }
 
+
+    #endregion
+
+    #region GetContracts
+
     public async Task<List<GetContractsResponse>> GetContracts()
     {
         var contractList = await _applicationDbContext.Contracts
@@ -70,21 +82,31 @@ public class ContractRepository : IContractRepository
         return _mapper.Map<List<GetContractsResponse>>(contractList);
     }
 
+
+    #endregion
+
+    #region GetContract
+
     public async Task<GetContractResponse> GetContract(Guid contractId)
     {
         var contact = await _applicationDbContext.Contracts
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x=> x.ContractId == contractId)
-                        ?? throw new NotFoundException(ContractExceptionMessages.NotFound);
+                          .AsNoTracking()
+                          .FirstOrDefaultAsync(x=> x.ContractId == contractId)
+                      ?? throw new NotFoundException(ContractExceptionMessages.NotFound);
         
         return _mapper.Map<GetContractResponse>(contact);
     }
 
+
+    #endregion
+
+    #region DeleteContract
+
     public async Task<Guid> DeleteContract(Guid contractId)
     {
         var contract = await _applicationDbContext.Contracts
-                          .FirstOrDefaultAsync(x => x.ContractId == contractId)
-                      ?? throw new NotFoundException(ContractExceptionMessages.NotFound);
+                           .FirstOrDefaultAsync(x => x.ContractId == contractId)
+                       ?? throw new NotFoundException(ContractExceptionMessages.NotFound);
         
         _applicationDbContext.Contracts.Remove(contract);
         
@@ -92,4 +114,7 @@ public class ContractRepository : IContractRepository
         
         return contract.ContractId;
     }
+
+    #endregion
+    
 }

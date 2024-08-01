@@ -17,7 +17,7 @@ public sealed record GetPricesQuery : IRequest<List<GetPricesResponse>>
 
         public async Task<List<GetPricesResponse>> Handle(GetPricesQuery request, CancellationToken cancellationToken)
         {
-            return await _priceRepository.GerPrices();
+            return await _priceRepository.GetPrices();
         }
     }
 }
