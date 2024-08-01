@@ -85,6 +85,10 @@ public class ImageExceptionMessages
     public const string InvalidImage = "Invalid image";
     public const string InvalidPath = "Invalid path";
     public const string InvalidName = "Invalid file name";
+    public const string ImageNotFound = "Image not found";
+    public const string Error = "An error occured while deleting the image";
+    
+    
     
 }
 

@@ -13,6 +13,7 @@ public sealed record UpdateSliderRequest(
     DateTime ActiveFrom,
     DateTime ActiveTo,
     bool IsActive,
-    IFormFile File
+    IFormFile MainImage,
+    IFormFile MobileImage
 );
 

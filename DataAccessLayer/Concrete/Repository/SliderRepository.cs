@@ -31,22 +31,14 @@ public class SliderRepository : ISliderRepository
     public async Task<SliderResponse> CreateSlider(CreateSliderRequest createSliderRequest)
     {
         await IsExistGeneric(x => x.Title == createSliderRequest.Title);
-        await IsExistOrderNumber(createSliderRequest.OrderNumber);
-
-        string mainImageUrl = null;
-        string mobileImageUrl = null;
         
-        if (createSliderRequest.File != null)
-        {
-            mainImageUrl = await SaveImageAsync(createSliderRequest.File);
-            mobileImageUrl = await SaveImageAsync(createSliderRequest.File);
-        }
+        await IsExistOrderNumber(createSliderRequest.OrderNumber);
 
         var slider = new Slider();
         
             slider.Title = createSliderRequest.Title;
-            slider.MainImageUrl = mainImageUrl ?? throw new InvalidOperationException();
-            slider.MobileImageUrl = mobileImageUrl ?? throw new InvalidOperationException();
+            slider.MainImageUrl = await SaveImageAsync(createSliderRequest.MainImage);
+            slider.MobileImageUrl = await SaveImageAsync(createSliderRequest.MobileImage);
             slider.TargetUrl = createSliderRequest.TargetUrl;
             slider.OrderNumber = createSliderRequest.OrderNumber;
             slider.ActiveFrom = createSliderRequest.ActiveFrom.ToUniversalTime();
@@ -73,8 +65,14 @@ public class SliderRepository : ISliderRepository
                          .FirstOrDefaultAsync(x => x.SliderId == sliderId)
                      ?? throw new NotFoundException(SliderExceptionMessages.NotFound);
 
-        _applicationDbContext.Sliders.Remove(slider);
+        // Resimleri sil
+        await DeleteImageAsync(slider.MainImageUrl);
+        
+        await DeleteImageAsync(slider.MobileImageUrl);
 
+        // Slider'ı veritabanından sil
+        _applicationDbContext.Sliders.Remove(slider);
+        
         await _applicationDbContext.SaveChangesAsync();
 
         return slider.SliderId;
@@ -104,6 +102,7 @@ public class SliderRepository : ISliderRepository
         var sliders = _applicationDbContext.Sliders
             .AsNoTracking();
 
+        // 
         if (predicate != null)
         {
             var slidersPredicate = _mapper.MapExpression<Expression<Func<Slider, bool>>>(predicate);
@@ -128,28 +127,24 @@ public class SliderRepository : ISliderRepository
         var slider = await _applicationDbContext.Sliders.FirstOrDefaultAsync(
                          x => x.SliderId == updateSliderRequest.SliderId)
                      ?? throw new NotFoundException(SliderExceptionMessages.NotFound);
+        
+        // Resimleri sil
+        await DeleteImageAsync(slider.MainImageUrl);
+        
+        await DeleteImageAsync(slider.MobileImageUrl);
 
         await IsExistOrderNumberWhenUpdate(updateSliderRequest.SliderId, updateSliderRequest.OrderNumber);
-
-        string mainImageUrl = null;
-        string mobileImageUrl = null;
-        
-        if (updateSliderRequest.File != null)
-        {
-            mainImageUrl = await SaveImageAsync(updateSliderRequest.File);
-            mobileImageUrl = await SaveImageAsync(updateSliderRequest.File);
-        }
         
         slider.Title = updateSliderRequest.Title;
-        slider.MainImageUrl = mainImageUrl ?? throw new InvalidOperationException();
-        slider.MobileImageUrl = mobileImageUrl ?? throw new InvalidOperationException();
+        slider.MainImageUrl = await SaveImageAsync(updateSliderRequest.MainImage);
+        slider.MobileImageUrl = await SaveImageAsync(updateSliderRequest.MobileImage);
         slider.TargetUrl = updateSliderRequest.TargetUrl;
         slider.OrderNumber = updateSliderRequest.OrderNumber;
         slider.Duration = updateSliderRequest.Duration;
         slider.ActiveFrom = updateSliderRequest.ActiveFrom.ToUniversalTime();
         slider.ActiveTo = updateSliderRequest.ActiveTo.ToUniversalTime();
         slider.IsActive = updateSliderRequest.IsActive;
-
+        
         await _applicationDbContext.SaveChangesAsync();
 
         var sliderResponse = _mapper.Map<SliderResponse>(slider);
@@ -209,7 +204,7 @@ public class SliderRepository : ISliderRepository
             throw new BadRequestException(ImageExceptionMessages.InvalidName);
 
         var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
-        
+    
         if (!Directory.Exists(uploadsFolder))
         {
             Directory.CreateDirectory(uploadsFolder);
@@ -223,9 +218,40 @@ public class SliderRepository : ISliderRepository
             await image.CopyToAsync(stream);
         }
 
-        return filePath; 
+        // Relative path'i döndür (sadece "uploads" klasöründen itibaren)
+        var relativePath = Path.Combine("uploads", uniqueFileName);
+        
+        return relativePath;
     }
 
     #endregion
-   
+
+    #region DeleteImage
+
+    public async Task DeleteImageAsync(string imageUrl)
+    {
+        if (string.IsNullOrEmpty(imageUrl))
+            return;
+        
+        var fileName = Path.GetFileName(imageUrl);
+        
+        var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", fileName);
+
+        // Dosya yolunu kontrol ve loglama
+        if (!File.Exists(filePath))
+        {
+            throw new NotFoundException(ImageExceptionMessages.NotFound);
+        }
+
+        try
+        {
+            File.Delete(filePath);
+        }
+        catch (Exception ex)
+        {
+            throw new InternalServerError(ImageExceptionMessages.Error);
+        }
+    }
+
+    #endregion
 }

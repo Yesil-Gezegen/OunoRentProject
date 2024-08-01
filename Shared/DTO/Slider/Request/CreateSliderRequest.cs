@@ -10,5 +10,6 @@ public sealed record CreateSliderRequest(
     DateTime ActiveFrom,
     DateTime ActiveTo,
     bool IsActive,
-    IFormFile File
+    IFormFile MainImage,
+    IFormFile MobileImage
 );
