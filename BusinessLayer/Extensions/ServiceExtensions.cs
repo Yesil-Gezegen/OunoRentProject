@@ -1,4 +1,3 @@
-using System.Net.Mime;
 using System.Text;
 using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.CQRS.Category.Query;
@@ -43,6 +42,7 @@ public static class ServiceExtensions
         services.AddScoped<IContactFormRepository, ContactFormRepository>();
         services.AddScoped<IBrandRepository, BrandRepository>();
         services.AddScoped<IFeatureRepository, FeatureRepository>();
+        services.AddScoped<IPriceRepository, PriceRepository>();
         services.AddScoped<IAddressRepository, AddressRepository>();
     }
 

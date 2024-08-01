@@ -15,6 +15,7 @@ using Shared.DTO.FeaturedCategories.Response;
 using Shared.DTO.FooterItem.Response;
 using Shared.DTO.SubCategory.Response;
 using Shared.DTO.MenuItem.Response;
+using Shared.DTO.Price.Response;
 
 namespace BusinessLayer.Mapper;
 
@@ -78,6 +79,11 @@ public class MapperProfile : Profile
         CreateMap<Feature, GetFeaturesResponse>()
             .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
             .ForMember(dest => dest.SubCategory, opt => opt.MapFrom(src => src.SubCategory));
+
+        CreateMap<Price, PriceResponse>();
+        CreateMap<Price, GetPriceResponse>();
+        CreateMap<Price, GetPricesResponse>();
+
 
         CreateMap<Address, AddressResponse>();
         CreateMap<Address, GetAddressResponse>()
