@@ -87,9 +87,6 @@ public class ImageExceptionMessages
     public const string InvalidName = "Invalid file name";
     public const string ImageNotFound = "Image not found";
     public const string Error = "An error occured while deleting the image";
-    
-    
-    
 }
 
 public class FeatureExceptionMessages
@@ -101,6 +98,13 @@ public class PriceExceptionMessages
 {
     public const string NotFound = "Price not found";
 }
+
+public class ContractExceptionMessages
+{
+    public const string NotFound = "Contract not found";
+    public const string Conflict = "Contract Already exist";
+}
+
 
 public class AddressExceptionMessages
 {

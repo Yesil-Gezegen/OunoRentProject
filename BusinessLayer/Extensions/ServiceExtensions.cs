@@ -43,6 +43,7 @@ public static class ServiceExtensions
         services.AddScoped<IBrandRepository, BrandRepository>();
         services.AddScoped<IFeatureRepository, FeatureRepository>();
         services.AddScoped<IPriceRepository, PriceRepository>();
+        services.AddScoped<IContractRepository, ContractRepository>();
         services.AddScoped<IAddressRepository, AddressRepository>();
     }
 

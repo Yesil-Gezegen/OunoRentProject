@@ -10,6 +10,7 @@ using Shared.DTO.Blog.Request;
 using Shared.DTO.Brand.Response;
 using Shared.DTO.FAQ.Response;
 using Shared.DTO.ContactForm.Response;
+using Shared.DTO.Contract.Response;
 using Shared.DTO.Feature.Response;
 using Shared.DTO.FeaturedCategories.Response;
 using Shared.DTO.FooterItem.Response;
@@ -83,6 +84,10 @@ public class MapperProfile : Profile
         CreateMap<Price, PriceResponse>();
         CreateMap<Price, GetPriceResponse>();
         CreateMap<Price, GetPricesResponse>();
+
+        CreateMap<Contract, ContractResponse>();
+        CreateMap<Contract, GetContractResponse>();
+        CreateMap<Contract, GetContractsResponse>();
 
 
         CreateMap<Address, AddressResponse>();
