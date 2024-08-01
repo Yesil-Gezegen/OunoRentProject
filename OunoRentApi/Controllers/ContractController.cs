@@ -42,7 +42,7 @@ public class ContractController : ControllerBase
         return Ok(result);
     }
     
-    [HttpPut("")]
+    [HttpPut("{contractId:guid}")]
     public async Task<IActionResult> UpdateContract(UpdateContractRequest updateContractRequest)
     {
         var result = await _mediator.Send(new UpdateContractCommand(updateContractRequest));
