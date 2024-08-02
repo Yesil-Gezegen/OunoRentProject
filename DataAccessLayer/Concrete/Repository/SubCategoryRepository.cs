@@ -18,12 +18,14 @@ namespace DataAccessLayer.Concrete.Repository;
 public class SubCategoryRepository : ISubCategoryRepository
 {
     private readonly ApplicationDbContext _applicationDbContext;
+    private readonly IImageService _imageService;
     private readonly IMapper _mapper;
 
-    public SubCategoryRepository(ApplicationDbContext applicationDbContext, IMapper mapper)
+    public SubCategoryRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IImageService imageService)
     {
         _applicationDbContext = applicationDbContext;
         _mapper = mapper;
+        _imageService = imageService;
     }
  
     #region CreateSubCategory
@@ -40,7 +42,7 @@ public class SubCategoryRepository : ISubCategoryRepository
         subCategory.CategoryId = categoryId;
         subCategory.Name = createSubCategoryRequest.Name.Trim();
         subCategory.Description = createSubCategoryRequest.Description.Trim();
-        subCategory.Icon = createSubCategoryRequest.Icon.Trim();
+        subCategory.Icon = await _imageService.SaveImageAsync(createSubCategoryRequest.Icon);
         subCategory.OrderNumber = createSubCategoryRequest.OrderNumber;
         subCategory.IsActive = true;
 
@@ -65,6 +67,8 @@ public class SubCategoryRepository : ISubCategoryRepository
                               .FirstOrDefaultAsync()
                           ?? throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
 
+        await _imageService.DeleteImageAsync(subCategory.Icon);
+        
         _applicationDbContext.SubCategories.Remove(subCategory);
 
         await _applicationDbContext.SaveChangesAsync();
@@ -132,11 +136,16 @@ public class SubCategoryRepository : ISubCategoryRepository
 
         await IsExistWhenUpdate(
             updateSubCategoryRequest.SubCategoryId, updateSubCategoryRequest.OrderNumber, updateSubCategoryRequest.Name);
-
+        
         subCategory.Name = updateSubCategoryRequest.Name.Trim();
         subCategory.Description = updateSubCategoryRequest.Description.Trim();
-        subCategory.Icon = updateSubCategoryRequest.Icon.Trim();
         subCategory.OrderNumber = updateSubCategoryRequest.OrderNumber;
+
+        if (updateSubCategoryRequest.Icon != null)
+        {
+            await _imageService.DeleteImageAsync(subCategory.Icon);
+            subCategory.Icon = await _imageService.SaveImageAsync(updateSubCategoryRequest.Icon);
+        }
 
         _applicationDbContext.SubCategories.Update(subCategory);
 

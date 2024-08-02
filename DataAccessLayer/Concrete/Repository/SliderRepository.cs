@@ -3,22 +3,27 @@ using AutoMapper;
 using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.Middlewares;
 using EntityLayer.Entities;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Shared.DTO.Slider.Request;
 using Shared.DTO.Slider.Response;
 using Shared.Interface;
+using ArgumentException = System.ArgumentException;
 
 namespace DataAccessLayer.Concrete.Repository;
 
 public class SliderRepository : ISliderRepository
 {
     private readonly ApplicationDbContext _applicationDbContext;
+    private readonly IImageService _imageService;
     private readonly IMapper _mapper;
 
-    public SliderRepository(ApplicationDbContext applicationDbContext, IMapper mapper)
+    public SliderRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IImageService imageService)
     {
         _applicationDbContext = applicationDbContext;
         _mapper = mapper;
+        _imageService = imageService;
     }
 
     #region CreateSlider
@@ -29,18 +34,17 @@ public class SliderRepository : ISliderRepository
 
         await IsExistOrderNumber(createSliderRequest.OrderNumber);
 
-        var slider = new Slider
-        {
-            Title = createSliderRequest.Title,
-            MainImageUrl = createSliderRequest.MainImageUrl,
-            MobileImageUrl = createSliderRequest.MobileImageUrl,
-            TargetUrl = createSliderRequest.TargetUrl,
-            OrderNumber = createSliderRequest.OrderNumber,
-            ActiveFrom = createSliderRequest.ActiveFrom.ToUniversalTime(),
-            ActiveTo = createSliderRequest.ActiveTo.ToUniversalTime(),
-            Duration = createSliderRequest.Duration,
-            IsActive = createSliderRequest.IsActive
-        };
+        var slider = new Slider();
+
+        slider.Title = createSliderRequest.Title;
+        slider.MainImageUrl = await _imageService.SaveImageAsync(createSliderRequest.MainImage);
+        slider.MobileImageUrl = await _imageService.SaveImageAsync(createSliderRequest.MobileImage);
+        slider.TargetUrl = createSliderRequest.TargetUrl;
+        slider.OrderNumber = createSliderRequest.OrderNumber;
+        slider.ActiveFrom = createSliderRequest.ActiveFrom.ToUniversalTime();
+        slider.ActiveTo = createSliderRequest.ActiveTo.ToUniversalTime();
+        slider.Duration = createSliderRequest.Duration;
+        slider.IsActive = createSliderRequest.IsActive;
 
         _applicationDbContext.Sliders.Add(slider);
 
@@ -61,6 +65,12 @@ public class SliderRepository : ISliderRepository
                          .FirstOrDefaultAsync(x => x.SliderId == sliderId)
                      ?? throw new NotFoundException(SliderExceptionMessages.NotFound);
 
+        // Resimleri sil
+        await _imageService.DeleteImageAsync(slider.MainImageUrl);
+
+        await _imageService.DeleteImageAsync(slider.MobileImageUrl);
+
+        // Slider'ı veritabanından sil
         _applicationDbContext.Sliders.Remove(slider);
 
         await _applicationDbContext.SaveChangesAsync();
@@ -92,18 +102,19 @@ public class SliderRepository : ISliderRepository
         var sliders = _applicationDbContext.Sliders
             .AsNoTracking();
 
+        // 
         if (predicate != null)
         {
             var slidersPredicate = _mapper.MapExpression<Expression<Func<Slider, bool>>>(predicate);
             sliders = sliders.Where(slidersPredicate);
         }
-        
+
         var slidersList = await sliders
             .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();
-        
+
         var getSlidersResponse = _mapper.Map<List<GetSlidersResponse>>(slidersList);
-        
+
         return getSlidersResponse;
     }
 
@@ -116,18 +127,28 @@ public class SliderRepository : ISliderRepository
         var slider = await _applicationDbContext.Sliders.FirstOrDefaultAsync(
                          x => x.SliderId == updateSliderRequest.SliderId)
                      ?? throw new NotFoundException(SliderExceptionMessages.NotFound);
-
+        
         await IsExistOrderNumberWhenUpdate(updateSliderRequest.SliderId, updateSliderRequest.OrderNumber);
 
         slider.Title = updateSliderRequest.Title;
-        slider.MainImageUrl = updateSliderRequest.MainImageUrl;
-        slider.MobileImageUrl = updateSliderRequest.MobileImageUrl;
         slider.TargetUrl = updateSliderRequest.TargetUrl;
         slider.OrderNumber = updateSliderRequest.OrderNumber;
         slider.Duration = updateSliderRequest.Duration;
         slider.ActiveFrom = updateSliderRequest.ActiveFrom.ToUniversalTime();
         slider.ActiveTo = updateSliderRequest.ActiveTo.ToUniversalTime();
         slider.IsActive = updateSliderRequest.IsActive;
+
+        if (updateSliderRequest.MainImage != null)
+        {
+            await _imageService.DeleteImageAsync(slider.MainImageUrl);
+            slider.MainImageUrl = await _imageService.SaveImageAsync(updateSliderRequest.MainImage);
+        }
+
+        if (updateSliderRequest.MobileImage != null)
+        {
+            await _imageService.DeleteImageAsync(slider.MobileImageUrl);
+            slider.MobileImageUrl = await _imageService.SaveImageAsync(updateSliderRequest.MobileImage);
+        }
 
         await _applicationDbContext.SaveChangesAsync();
 
@@ -150,7 +171,7 @@ public class SliderRepository : ISliderRepository
             throw new ConflictException(SliderExceptionMessages.OrderNumberConflict);
         }
     }
-    
+
     private async Task IsExistOrderNumberWhenUpdate(Guid sliderId, int orderNumber)
     {
         var isExistOrderNumber = await _applicationDbContext.Sliders

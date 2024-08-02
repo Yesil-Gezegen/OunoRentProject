@@ -14,12 +14,14 @@ namespace DataAccessLayer.Concrete.Repository;
 public class BlogRepository : IBlogRepository
 {
     private readonly ApplicationDbContext _applicationDbContext;
+    private readonly IImageService _imageService;
     private readonly IMapper _mapper;
 
-    public BlogRepository(ApplicationDbContext applicationDbContext, IMapper mapper)
+    public BlogRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IImageService imageService)
     {
         _applicationDbContext = applicationDbContext;
         _mapper = mapper;
+        _imageService = imageService;
     }
 
     #region CreateBlog
@@ -36,10 +38,10 @@ public class BlogRepository : IBlogRepository
         
         var blog = new Blog();
 
-        blog.LargeImageUrl = createBlogRequest.LargeImageUrl.Trim();
+        blog.LargeImageUrl = await _imageService.SaveImageAsync(createBlogRequest.LargeImage);
+        blog.SmallImageUrl = await _imageService.SaveImageAsync(createBlogRequest.SmallImage);
         blog.OrderNumber = createBlogRequest.OrderNumber;
         blog.Slug = createBlogRequest.Slug.Trim();
-        blog.SmallImageUrl = createBlogRequest.SmallImageUrl.Trim();
         blog.IsActive = true;
         blog.Date = DateTime.UtcNow;
         blog.SubCategoryId = createBlogRequest.SubCategoryId;
@@ -103,6 +105,10 @@ public class BlogRepository : IBlogRepository
             .FirstOrDefaultAsync()
         ?? throw new NotFoundException(BlogExceptionMessages.NotFound);
 
+        await _imageService.DeleteImageAsync(blog.SmallImageUrl);
+
+        await _imageService.DeleteImageAsync(blog.LargeImageUrl);
+        
         _applicationDbContext.Blogs.Remove(blog);
 
         await _applicationDbContext.SaveChangesAsync();
@@ -126,16 +132,26 @@ public class BlogRepository : IBlogRepository
             throw new NotFoundException(SubCategoryExceptionMessages.NotFound);
 
         await IsExistOrderNumberWhenUpdate(updateBlogRequest.BlogId, updateBlogRequest.OrderNumber);
-
+        
         blog.Title = updateBlogRequest.Title.Trim();
         blog.Tags = updateBlogRequest.Tags.Trim();
         blog.Slug = updateBlogRequest.Slug.Trim();
         blog.OrderNumber = updateBlogRequest.OrderNumber;
         blog.Date = updateBlogRequest.Date;
         blog.SubCategoryId = updateBlogRequest.SubCategoryId;
-        blog.LargeImageUrl = updateBlogRequest.LargeImgUrl.Trim();
-        blog.SmallImageUrl = updateBlogRequest.SmallImgUrl.Trim();
         blog.IsActive = updateBlogRequest.IsActive;
+
+        if (updateBlogRequest.LargeImage != null)
+        {
+            await _imageService.DeleteImageAsync(blog.LargeImageUrl);
+            blog.LargeImageUrl = await _imageService.SaveImageAsync(updateBlogRequest.LargeImage);
+        }
+
+        if (updateBlogRequest.SmallImage != null)
+        {
+            await _imageService.DeleteImageAsync(blog.SmallImageUrl);
+            blog.SmallImageUrl = await _imageService.SaveImageAsync(updateBlogRequest.SmallImage);
+        }
 
         await _applicationDbContext.SaveChangesAsync();
 

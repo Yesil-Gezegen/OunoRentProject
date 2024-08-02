@@ -12,12 +12,14 @@ namespace DataAccessLayer.Concrete.Repository;
 public class CategoryRepository : ICategoryRepository
 {
     private readonly ApplicationDbContext _applicationDbContext;
+    private readonly IImageService _imageService;
     private readonly IMapper _mapper;
 
-    public CategoryRepository(ApplicationDbContext applicationDbContext, IMapper mapper)
+    public CategoryRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IImageService imageService)
     {
         _applicationDbContext = applicationDbContext;
         _mapper = mapper;
+        _imageService = imageService;
     }
 
     #region GetCategories
@@ -88,10 +90,10 @@ public class CategoryRepository : ICategoryRepository
 
         category.Name = createCategoryRequest.Name.Trim();
         category.Description = createCategoryRequest.Description.Trim();
-        category.Icon = createCategoryRequest.Icon.Trim();
+        category.Icon = await _imageService.SaveImageAsync(createCategoryRequest.Icon);
         category.OrderNumber = createCategoryRequest.OrderNumber;
-        category.ImageHorizontalUrl = createCategoryRequest.ImageHorizontalUrl.Trim();
-        category.ImageSquareUrl = createCategoryRequest.ImageSquareUrl.Trim();
+        category.ImageHorizontalUrl = await _imageService.SaveImageAsync(createCategoryRequest.ImageHorizontal);
+        category.ImageSquareUrl = await _imageService.SaveImageAsync(createCategoryRequest.ImageSquare);
         category.IsActive = true;
 
         _applicationDbContext.Categories.Add(category);
@@ -115,14 +117,29 @@ public class CategoryRepository : ICategoryRepository
                        ?? throw new NotFoundException(CategoryExceptionMessages.NotFound);
 
         await IsExistWhenUpdate(updateCategoryRequest.CategoryId, updateCategoryRequest.OrderNumber, updateCategoryRequest.Name);
-
+        
         category.Name = updateCategoryRequest.Name.Trim();
         category.Description = updateCategoryRequest.Description.Trim();
-        category.Icon = updateCategoryRequest.Icon.Trim();
         category.OrderNumber = updateCategoryRequest.OrderNumber;
-        category.ImageHorizontalUrl = updateCategoryRequest.ImageHorizontalUrl.Trim();
-        category.ImageSquareUrl = updateCategoryRequest.ImageSquareUrl.Trim();
         category.IsActive = true;
+
+        if (updateCategoryRequest.ImageHorizontal != null)
+        {
+            await _imageService.DeleteImageAsync(category.ImageHorizontalUrl);
+            category.ImageHorizontalUrl = await _imageService.SaveImageAsync(updateCategoryRequest.ImageHorizontal);
+        }
+
+        if (updateCategoryRequest.ImageSquare != null)
+        {
+            await _imageService.DeleteImageAsync(category.ImageSquareUrl);
+            category.ImageSquareUrl = await _imageService.SaveImageAsync(updateCategoryRequest.ImageSquare);
+        }
+
+        if (updateCategoryRequest.Icon != null)
+        {
+            await _imageService.DeleteImageAsync(category.Icon);
+            category.Icon = await _imageService.SaveImageAsync(updateCategoryRequest.Icon);
+        }
 
         await _applicationDbContext.SaveChangesAsync();
 
@@ -143,6 +160,12 @@ public class CategoryRepository : ICategoryRepository
 
         await IsUsedCategory(categoryId);
 
+        await _imageService.DeleteImageAsync(category.ImageSquareUrl);
+
+        await _imageService.DeleteImageAsync(category.ImageHorizontalUrl);
+
+        await _imageService.DeleteImageAsync(category.Icon);
+        
         _applicationDbContext.Categories.Remove(category);
 
         await _applicationDbContext.SaveChangesAsync();

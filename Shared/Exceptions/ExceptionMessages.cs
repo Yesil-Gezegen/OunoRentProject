@@ -78,3 +78,36 @@ public class FAQExceptionMessages
     public const string NotFound = "FAQ not found";
     public const string LabelConflict = "Label already exists";
 }
+
+public class ImageExceptionMessages
+{
+    public const string NotFound = "Image not found";
+    public const string InvalidImage = "Invalid image";
+    public const string InvalidPath = "Invalid path";
+    public const string InvalidName = "Invalid file name";
+    public const string ImageNotFound = "Image not found";
+    public const string Error = "An error occured while deleting the image";
+}
+
+public class FeatureExceptionMessages
+{
+    public const string NotFound = "Feature not found";
+}
+
+public class PriceExceptionMessages
+{
+    public const string NotFound = "Price not found";
+}
+
+public class ContractExceptionMessages
+{
+    public const string NotFound = "Contract not found";
+    public const string Conflict = "Contract Already exist";
+}
+
+
+public class AddressExceptionMessages
+{
+    public const string TitleConflict = "Title already exist";
+    public const string NotFound = "Address not found";
+}

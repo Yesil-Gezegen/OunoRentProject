@@ -31,6 +31,7 @@ public static class ServiceExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IImageService, ImageService>();
         services.AddScoped<ISliderRepository, SliderRepository>();
         services.AddScoped<IBlogRepository, BlogRepository>();
         services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
@@ -40,6 +41,10 @@ public static class ServiceExtensions
         services.AddScoped<IFAQRepository, FAQRepository>();
         services.AddScoped<IContactFormRepository, ContactFormRepository>();
         services.AddScoped<IBrandRepository, BrandRepository>();
+        services.AddScoped<IFeatureRepository, FeatureRepository>();
+        services.AddScoped<IPriceRepository, PriceRepository>();
+        services.AddScoped<IContractRepository, ContractRepository>();
+        services.AddScoped<IAddressRepository, AddressRepository>();
     }
 
     /// <summary>

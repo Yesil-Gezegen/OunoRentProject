@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Bogus;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -17,66 +18,82 @@ public class SliderControllerTests : IClassFixture<WebApplicationFactory<Program
     }
 
     #region CreateSlider
+
+[Fact]
+public async Task CreateSlider_ReturnsSuccessAsync()
+{
+    // Arrange
+    var faker = new Faker<CreateSliderRequest>()
+        .CustomInstantiator(f => new CreateSliderRequest(
+            Title: f.Lorem.Sentence(),
+            TargetUrl: f.Internet.DomainName(),
+            Duration: f.Random.Int(1, 10),
+            OrderNumber: f.Random.Int(1, 10000),
+            ActiveFrom: f.Date.Past().ToUniversalTime(),
+            ActiveTo: f.Date.Future().ToUniversalTime(),
+            IsActive: f.Random.Bool(),
+            MainImage: null,
+            MobileImage: null
+        ));
+
+    var fakeSlider = faker.Generate();
+
+    // Gerçek dosya yolları
+    var mainImagePath = "/Users/ozgurgokmen/source/repos/OunoRentProject/OunoRentApiTests/TestAssets/Cat03.jpg";
+    var mobileImagePath = "/Users/ozgurgokmen/source/repos/OunoRentProject/OunoRentApiTests/TestAssets/testImage.png";
+
+    var multipartFormData = CreateMultipartContent(fakeSlider, mainImagePath, mobileImagePath);
+    
+    // Act
+    var response = await _client.PostAsync("/api/slider/", multipartFormData);
+    response.EnsureSuccessStatusCode();
+    var content = await response.Content.ReadFromJsonAsync<SliderResponse>();
+
+    // Assert
+    Assert.NotNull(content);
+    Assert.NotEqual(Guid.Empty, content.SliderId);
+}
+
     [Fact]
-    public async Task CreateSlider_ReturnsSuccessAsync()
+    public async Task CreateSlider_ReturnsBadRequestAsync()
     {
-        //Arrange
+        // Arrange
         var faker = new Faker<CreateSliderRequest>()
             .CustomInstantiator(f => new CreateSliderRequest(
-                Title: f.Lorem.Text(),
-                MainImageUrl: f.Image.PlaceImgUrl(),
-                MobileImageUrl: f.Image.PlaceImgUrl(),
+                Title: f.Lorem.Sentence(),
                 TargetUrl: f.Internet.DomainName(),
                 Duration: f.Random.Int(1, 10),
                 OrderNumber: f.Random.Int(1, 10000),
                 ActiveFrom: f.Date.Past().ToUniversalTime(),
                 ActiveTo: f.Date.Future().ToUniversalTime(),
-                IsActive: f.Random.Bool()
+                IsActive: f.Random.Bool(),
+                MainImage: null,
+                MobileImage: null
             ));
 
         var fakeSlider = faker.Generate();
 
-        //Act
-        var response = await _client.PostAsJsonAsync("/api/slider/", fakeSlider);
+        // Gerçek dosya yolları
+        var mainImagePath = "/Users/ozgurgokmen/source/repos/OunoRentProject/OunoRentApiTests/TestAssets/Cat03.jpg";
+        var mobileImagePath = "/Users/ozgurgokmen/source/repos/OunoRentProject/OunoRentApiTests/TestAssets/testImage.png";
+
+        var multipartFormData = CreateMultipartContent(fakeSlider, mainImagePath, mobileImagePath);
+
+        // Act
+        var response = await _client.PostAsync("/api/slider/", multipartFormData);
         response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadFromJsonAsync<SliderResponse>();
+        var sliderResponse = await response.Content.ReadFromJsonAsync<SliderResponse>();
 
-        //Assert
-        Assert.NotNull(content);
-        Assert.NotEqual(Guid.Empty, content.SliderId);
+        // Assert
+        Assert.NotNull(sliderResponse);
+        Assert.NotEqual(Guid.Empty, sliderResponse.SliderId);
+
     }
 
-    [Fact]
-    public async Task CreateSlider_ReturnsBadRequestAsync()
-    {
-        //Arrange
-        var faker = new Faker<CreateSliderRequest>()
-            .CustomInstantiator(f => new CreateSliderRequest(
-                Title: f.Random.Bool(1) ? null : f.Lorem.Text(),
-                MainImageUrl: f.Image.PlaceImgUrl(),
-                MobileImageUrl: f.Image.PlaceImgUrl(),
-                TargetUrl: f.Internet.DomainName(),
-                Duration: f.Random.Int(1, 10),
-                OrderNumber: f.Random.Int(1, 10000),
-                ActiveFrom: f.Date.Past(),
-                ActiveTo: f.Date.Future(),
-                IsActive: f.Random.Bool()
-            ));
-
-        var fakeSlider = faker.Generate();
-
-        //Act
-        var response = await _client.PostAsJsonAsync("/api/slider", fakeSlider);
-        var content = await response.Content.ReadFromJsonAsync<SliderResponse>();
-
-        //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        Assert.NotNull(content);
-        Assert.Equal(Guid.Empty, content.SliderId);
-    }
     #endregion
 
     #region GetSliders
+
     [Fact]
     public async Task GetSliders_ReturnSuccessAsync()
     {
@@ -88,7 +105,7 @@ public class SliderControllerTests : IClassFixture<WebApplicationFactory<Program
         //Assert
         Assert.NotNull(content);
     }
-    
+
     [Fact]
     public async Task GetActiveSliders_ReturnSuccessAsync()
     {
@@ -104,9 +121,11 @@ public class SliderControllerTests : IClassFixture<WebApplicationFactory<Program
             Assert.True(item.IsActive);
         }
     }
+
     #endregion
 
     #region GetSlider
+
     [Fact]
     public async Task GetSlider_ReturnsSuccessAsync()
     {
@@ -127,9 +146,11 @@ public class SliderControllerTests : IClassFixture<WebApplicationFactory<Program
         Assert.NotNull(content);
         Assert.Equal(slider.SliderId, content.SliderId);
     }
+
     #endregion
 
     #region UpdateSlider
+
     [Fact]
     public async Task UpdateSlider_ReturnsSuccessAsync()
     {
@@ -145,19 +166,25 @@ public class SliderControllerTests : IClassFixture<WebApplicationFactory<Program
             .CustomInstantiator(f => new UpdateSliderRequest(
                 SliderId: slider.SliderId,
                 Title: f.Lorem.Text(),
-                MainImageUrl: f.Image.PlaceImgUrl(),
-                MobileImageUrl: f.Image.PlaceImgUrl(),
                 TargetUrl: f.Internet.DomainName(),
                 Duration: f.Random.Int(1, 10),
                 OrderNumber: f.Random.Int(1, 10000),
                 ActiveFrom: f.Date.Past().ToUniversalTime(),
                 ActiveTo: f.Date.Future().ToUniversalTime(),
-                IsActive: f.Random.Bool()
+                IsActive: f.Random.Bool(),
+                MainImage: null,
+                MobileImage: null
             ));
 
         var fakeSlider = faker.Generate();
+        
+        // Gerçek dosya yolları
+        var mainImagePath = "/Users/ozgurgokmen/source/repos/OunoRentProject/OunoRentApiTests/TestAssets/Cat03.jpg";
+        var mobileImagePath = "/Users/ozgurgokmen/source/repos/OunoRentProject/OunoRentApiTests/TestAssets/testImage.png";
 
-        var response = await _client.PutAsJsonAsync($"/api/slider/{slider.SliderId}", fakeSlider);
+        var multipartFormData = UpdateMultipartContent(fakeSlider, mainImagePath, mobileImagePath);
+        
+        var response = await _client.PutAsync($"/api/slider/{slider.SliderId}", multipartFormData);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadFromJsonAsync<SliderResponse>();
 
@@ -190,19 +217,25 @@ public class SliderControllerTests : IClassFixture<WebApplicationFactory<Program
             .CustomInstantiator(f => new UpdateSliderRequest(
                 SliderId: slider.SliderId,
                 Title: f.Random.Bool(1) ? null : f.Lorem.Text(),
-                MainImageUrl: f.Image.PlaceImgUrl(),
-                MobileImageUrl: f.Image.PlaceImgUrl(),
                 TargetUrl: f.Internet.DomainName(),
                 Duration: f.Random.Int(1, 10),
                 OrderNumber: f.Random.Int(1, 10000),
                 ActiveFrom: f.Date.Past().ToUniversalTime(),
                 ActiveTo: f.Date.Future().ToUniversalTime(),
-                IsActive: f.Random.Bool()
+                IsActive: f.Random.Bool(),
+                MainImage: null,
+                MobileImage: null
             ));
 
         var fakeSlider = faker.Generate();
+        
+        // Gerçek dosya yolları
+        var mainImagePath = "/Users/ozgurgokmen/source/repos/OunoRentProject/OunoRentApiTests/TestAssets/Cat03.jpg";
+        var mobileImagePath = "/Users/ozgurgokmen/source/repos/OunoRentProject/OunoRentApiTests/TestAssets/testImage.png";
 
-        var response = await _client.PutAsJsonAsync($"/api/slider/{slider.SliderId}", fakeSlider);
+        var multipartFormData = UpdateMultipartContent(fakeSlider, mainImagePath, mobileImagePath);
+        
+        var response = await _client.PutAsync($"/api/slider/{slider.SliderId}", multipartFormData);
         var content = await response.Content.ReadFromJsonAsync<SliderResponse>();
 
         var updatedResponse = await _client.GetAsync($"/api/slider/{fakeSlider.SliderId}");
@@ -217,9 +250,11 @@ public class SliderControllerTests : IClassFixture<WebApplicationFactory<Program
         Assert.NotNull(updatedContent);
         Assert.Equal(slider.Title, updatedContent.Title);
     }
+
     #endregion
 
     #region DeleteSlider
+
     [Fact]
     public async Task DeleteSlider_ReturnsSuccessAsync()
     {
@@ -253,5 +288,62 @@ public class SliderControllerTests : IClassFixture<WebApplicationFactory<Program
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
     }
+
     #endregion
+    
+    private MultipartFormDataContent CreateMultipartContent(CreateSliderRequest request, string mainImagePath, string mobileImagePath)
+    {
+        var content = new MultipartFormDataContent();
+
+        AddStringContent(content, request.Title, "Title");
+        AddStringContent(content, request.TargetUrl, "TargetUrl");
+        AddStringContent(content, request.Duration.ToString(), "Duration");
+        AddStringContent(content, request.OrderNumber.ToString(), "OrderNumber");
+        AddStringContent(content, request.ActiveFrom.ToString("o"), "ActiveFrom");
+        AddStringContent(content, request.ActiveTo.ToString("o"), "ActiveTo");
+        AddStringContent(content, request.IsActive.ToString(), "IsActive");
+
+        AddFileContent(content, mainImagePath, "MainImage");
+        AddFileContent(content, mobileImagePath, "MobileImage");
+
+        return content;
+    }
+    
+    private MultipartFormDataContent UpdateMultipartContent(UpdateSliderRequest request, string mainImagePath, string mobileImagePath)
+    {
+        var content = new MultipartFormDataContent();
+
+        AddStringContent(content, request.SliderId.ToString(), "SliderId");
+        AddStringContent(content, request.Title, "Title");
+        AddStringContent(content, request.TargetUrl, "TargetUrl");
+        AddStringContent(content, request.Duration.ToString(), "Duration");
+        AddStringContent(content, request.OrderNumber.ToString(), "OrderNumber");
+        AddStringContent(content, request.ActiveFrom.ToString("o"), "ActiveFrom");
+        AddStringContent(content, request.ActiveTo.ToString("o"), "ActiveTo");
+        AddStringContent(content, request.IsActive.ToString(), "IsActive");
+
+        AddFileContent(content, mainImagePath, "MainImage");
+        AddFileContent(content, mobileImagePath, "MobileImage");
+
+        return content;
+    }
+
+    private void AddStringContent(MultipartFormDataContent content, string value, string name)
+    {
+        if (!string.IsNullOrEmpty(value))
+        {
+            content.Add(new StringContent(value), name);
+        }
+    }
+
+    private void AddFileContent(MultipartFormDataContent content, string filePath, string name)
+    {
+        if (!string.IsNullOrEmpty(filePath))
+        {
+            var fileBytes = File.ReadAllBytes(filePath);
+            var fileContent = new ByteArrayContent(fileBytes);
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+            content.Add(fileContent, name, Path.GetFileName(filePath));
+        }
+    }
 }

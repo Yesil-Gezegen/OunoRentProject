@@ -19,7 +19,7 @@ public class SliderController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateSlider([FromBody] CreateSliderRequest request)
+    public async Task<IActionResult> CreateSlider([FromForm] CreateSliderRequest request)
     {
         var slider = await _mediator.Send(new CreateSliderCommand(request));
 
@@ -50,7 +50,7 @@ public class SliderController : ControllerBase
     }
 
     [HttpPut("{sliderId:guid}")]
-    public async Task<IActionResult> UpdateSlider([FromBody] UpdateSliderRequest request)
+    public async Task<IActionResult> UpdateSlider([FromForm] UpdateSliderRequest request)
     {
         var slider = await _mediator.Send(new UpdateSliderCommand(request));
 

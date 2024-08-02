@@ -43,14 +43,14 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest request)
+    public async Task<IActionResult> CreateCategory([FromForm] CreateCategoryRequest request)
     {
         var category = await _mediator.Send(new CreateCategoryCommand(request));
         return Ok(category);
     }
 
     [HttpPut("{categoryId:guid}")]
-    public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryRequest request)
+    public async Task<IActionResult> UpdateCategory([FromForm] UpdateCategoryRequest request)
     {
         var category = await _mediator.Send(new UpdateCategoryCommand(request));
         return Ok(category);
@@ -64,7 +64,8 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost("{categoryId:guid}/subcategory")]
-    public async Task<IActionResult> CreateSubCategory(Guid categoryId, CreateSubCategoryRequest createSubCategoryRequest)
+    public async Task<IActionResult> CreateSubCategory(Guid categoryId,
+        [FromForm] CreateSubCategoryRequest createSubCategoryRequest)
     {
         var category = await _mediator.Send(new CreateSubCategoryCommand(
             CategoryId: categoryId, CreateSubCategoryRequest: createSubCategoryRequest));
@@ -96,9 +97,10 @@ public class CategoryController : ControllerBase
 
         return Ok(category);
     }
-    
+
     [HttpPut("{categoryId:guid}/subcategory/{subCategoryId:guid}")]
-    public async Task<IActionResult> UpdateSubCategory(Guid categoryId, UpdateSubCategoryRequest updateSubCategoryRequest)
+    public async Task<IActionResult> UpdateSubCategory(Guid categoryId,
+        [FromForm] UpdateSubCategoryRequest updateSubCategoryRequest)
     {
         var category = await _mediator.Send(new UpdateSubCategoryCommand(
             CategoryId: categoryId, UpdateSubCategoryRequest: updateSubCategoryRequest));

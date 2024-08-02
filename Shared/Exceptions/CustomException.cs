@@ -31,3 +31,8 @@ public class IsUsedException : CustomException
 {
     public IsUsedException(string message) : base(message, (int)HttpStatusCode.Conflict) { }
 }
+
+public class InternalServerError : CustomException
+{
+    public InternalServerError(string message) : base(message, (int)HttpStatusCode.InternalServerError) { }
+}
