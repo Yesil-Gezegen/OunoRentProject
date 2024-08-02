@@ -8,6 +8,7 @@ using Shared.DTO.Slider.Response;
 using Shared.DTO.Blog.Response;
 using Shared.DTO.Blog.Request;
 using Shared.DTO.Brand.Response;
+using Shared.DTO.Channel.Response;
 using Shared.DTO.FAQ.Response;
 using Shared.DTO.ContactForm.Response;
 using Shared.DTO.Contract.Response;
@@ -151,6 +152,15 @@ public class MapperProfile : Profile
             .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
         CreateMap<Address, GetAddressesResponse>()
             .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
+
+        #endregion
+
+        #region Channel
+
+        CreateMap<Channel, ChannelResponse>();
+        CreateMap<Channel, GetChannelsResponse>();
+        CreateMap<Channel, GetChannelResponse>();
+
 
         #endregion
 

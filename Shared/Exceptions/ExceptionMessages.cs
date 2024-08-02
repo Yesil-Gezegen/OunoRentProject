@@ -111,6 +111,12 @@ public class AddressExceptionMessages
     public const string NotFound = "Address not found";
 }
 
+public class ChannelExceptionMessages
+{
+    public const string NotFound = "Channel not found";
+    public const string Conflict = "Channel Already exist";
+}
+
 public class UserContractExceptionMessages
 {
     public const string NotFound = "User contract not found";

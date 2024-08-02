@@ -46,6 +46,7 @@ public static class ServiceExtensions
         services.AddScoped<IContractRepository, ContractRepository>();
         services.AddScoped<IAddressRepository, AddressRepository>();
         services.AddScoped<IUserContractRepository, UserContractRepository>();
+        services.AddScoped<IChannelRepository, ChannelRepository>();
     }
 
     /// <summary>
@@ -57,7 +58,7 @@ public static class ServiceExtensions
     private static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+                    options.UseNpgsql(connectionString: configuration.GetConnectionString("DefaultConnection")));
     }
 
     /// <summary>

@@ -35,6 +35,8 @@ public class ApplicationDbContext : DbContext
     
     public DbSet<UserContract> UserContracts { get; set; }
 
+    public DbSet<Channel> Channels { get; set; }
+
     public override int SaveChanges()
     {
         UpdateAuditInformation();
