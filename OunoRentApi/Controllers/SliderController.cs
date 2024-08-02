@@ -1,12 +1,13 @@
 using BusinessLayer.CQRS.Slider.Command;
 using BusinessLayer.CQRS.Slider.Query;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Slider.Request;
 
 namespace OunoRentApi.Controllers;
 
-//[Authorize]
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class SliderController : ControllerBase
