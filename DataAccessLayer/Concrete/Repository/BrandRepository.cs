@@ -11,12 +11,14 @@ namespace DataAccessLayer.Concrete.Repository;
 public class BrandRepository : IBrandRepository
 {
     private readonly ApplicationDbContext _applicationDbContext;
+    private readonly IImageService _imageService;
     private readonly IMapper _mapper;
 
-    public BrandRepository(ApplicationDbContext applicationDbContext, IMapper mapper)
+    public BrandRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IImageService imageService)
     {
         _applicationDbContext = applicationDbContext;
         _mapper = mapper;
+        _imageService = imageService;
     }
 
     public async Task<BrandResponse> CreateBrand(CreateBrandRequest createBrandRequest)
@@ -24,7 +26,7 @@ public class BrandRepository : IBrandRepository
         var brand = new Brand();
         
         brand.Name = createBrandRequest.Name.Trim();
-        brand.Logo = createBrandRequest.Logo.Trim();
+        brand.Logo = await _imageService.SaveImageAsync(createBrandRequest.Logo);
         brand.ShowOnBrands = createBrandRequest.ShowOnBrands;
         brand.IsActive = createBrandRequest.IsActive;
         
@@ -63,11 +65,16 @@ public class BrandRepository : IBrandRepository
         var brand = await _applicationDbContext.Brands
                         .FirstOrDefaultAsync(x => x.BrandId == updateBrandRequest.BrandId)
                     ?? throw new NotFoundException(BrandExceptionMessages.NotFound);
-
+        
         brand.Name = updateBrandRequest.Name.Trim();
-        brand.Logo = updateBrandRequest.Logo.Trim();
         brand.ShowOnBrands = updateBrandRequest.ShowOnBrands;
         brand.IsActive = updateBrandRequest.IsActive;
+        
+        if(updateBrandRequest.Logo != null)
+        {
+            await _imageService.DeleteImageAsync(brand.Logo);
+            brand.Logo = await _imageService.SaveImageAsync(updateBrandRequest.Logo);
+        }
 
         await _applicationDbContext.SaveChangesAsync();
 
@@ -82,6 +89,8 @@ public class BrandRepository : IBrandRepository
                         .FirstOrDefaultAsync(x => x.BrandId == brandId)
                     ?? throw new NotFoundException(BrandExceptionMessages.NotFound);
 
+        _imageService.DeleteImageAsync(brand.Logo);
+        
         _applicationDbContext.Brands.Remove(brand);
 
         await _applicationDbContext.SaveChangesAsync();

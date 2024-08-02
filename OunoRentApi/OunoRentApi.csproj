@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
@@ -19,11 +20,6 @@
   <ItemGroup>
     <Folder Include="wwwroot\" />
     <Folder Include="wwwroot\uploads\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="wwwroot\uploads\d6ca01f2-1283-4a96-851d-26fcfe118d69_WhatsApp Image 2024-07-29 at 21.21.16 (2).jpeg" />
-    <Content Remove="wwwroot\uploads\5bf664d5-29fa-4350-8d81-471afcf0de8a_WhatsApp Image 2024-07-29 at 21.21.16 (2).jpeg" />
   </ItemGroup>
 
 </Project>

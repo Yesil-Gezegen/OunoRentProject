@@ -18,7 +18,7 @@ public class BlogController : ControllerBase
     }
 
     [HttpPost()]
-    public async Task<IActionResult> CreateBlogAsync(CreateBlogRequest createBlogRequest)
+    public async Task<IActionResult> CreateBlogAsync([FromForm] CreateBlogRequest createBlogRequest)
     {
         var result = await _mediator.Send(new CreateBlogCommand(createBlogRequest));
         return Ok(result);
@@ -54,7 +54,7 @@ public class BlogController : ControllerBase
     }
 
     [HttpPut("{blogId:guid}")]
-    public async Task<IActionResult> Update(UpdateBlogRequest updateBlogRequest)
+    public async Task<IActionResult> Update([FromForm] UpdateBlogRequest updateBlogRequest)
     {
         var result = await _mediator.Send(new UpdateBlogCommand(updateBlogRequest));
 

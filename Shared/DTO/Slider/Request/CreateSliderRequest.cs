@@ -1,9 +1,11 @@
+using System.Text.Json.Serialization;
+
 namespace Shared.DTO.Slider.Request;
+
 using Microsoft.AspNetCore.Http;
+
 public sealed record CreateSliderRequest(
     string Title,
-    string MainImageUrl,
-    string MobileImageUrl,
     string TargetUrl,
     int OrderNumber,
     int Duration,
