@@ -26,6 +26,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<ContactForm> ContactForms { get; set; }
     
     public DbSet<Feature> Features { get; set; }
+    
+    public DbSet<Address> Addresses { get; set; }
 
     public override int SaveChanges()
     {

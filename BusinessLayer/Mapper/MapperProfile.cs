@@ -1,6 +1,7 @@
 using AutoMapper;
 using Shared.DTO.Category.Response;
 using EntityLayer.Entities;
+using Shared.DTO.Address.Response;
 using Shared.DTO.User.Response;
 using Shared.DTO.Authentication.Response;
 using Shared.DTO.Slider.Response;
@@ -77,5 +78,11 @@ public class MapperProfile : Profile
         CreateMap<Feature, GetFeaturesResponse>()
             .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
             .ForMember(dest => dest.SubCategory, opt => opt.MapFrom(src => src.SubCategory));
+
+        CreateMap<Address, AddressResponse>();
+        CreateMap<Address, GetAddressResponse>()
+            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
+        CreateMap<Address, GetAddressesResponse>()
+            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
     }
 }

@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Text;
 using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.CQRS.Category.Query;
@@ -31,6 +32,7 @@ public static class ServiceExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IImageService, ImageService>();
         services.AddScoped<ISliderRepository, SliderRepository>();
         services.AddScoped<IBlogRepository, BlogRepository>();
         services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
@@ -41,6 +43,7 @@ public static class ServiceExtensions
         services.AddScoped<IContactFormRepository, ContactFormRepository>();
         services.AddScoped<IBrandRepository, BrandRepository>();
         services.AddScoped<IFeatureRepository, FeatureRepository>();
+        services.AddScoped<IAddressRepository, AddressRepository>();
     }
 
     /// <summary>
