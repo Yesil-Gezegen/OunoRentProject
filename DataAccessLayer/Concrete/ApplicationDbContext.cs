@@ -32,6 +32,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Address> Addresses { get; set; }
 
     public DbSet<Contract> Contracts { get; set; }
+    
+    public DbSet<UserContract> UserContracts { get; set; }
 
     public override int SaveChanges()
     {

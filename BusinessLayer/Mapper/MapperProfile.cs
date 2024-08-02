@@ -17,6 +17,7 @@ using Shared.DTO.FooterItem.Response;
 using Shared.DTO.SubCategory.Response;
 using Shared.DTO.MenuItem.Response;
 using Shared.DTO.Price.Response;
+using Shared.DTO.UserContracts.Response;
 
 namespace BusinessLayer.Mapper;
 
@@ -141,13 +142,28 @@ public class MapperProfile : Profile
         CreateMap<Contract, GetContractResponse>();
         CreateMap<Contract, GetContractsResponse>();
 
+        #endregion
+
+        #region Address
 
         CreateMap<Address, AddressResponse>();
         CreateMap<Address, GetAddressResponse>()
             .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
         CreateMap<Address, GetAddressesResponse>()
             .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
+
         #endregion
-        
+
+        #region UserContract
+
+        CreateMap<UserContract, UserContractResponse>();
+        CreateMap<UserContract, GetUserContractResponse>()
+            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+            .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract));
+        CreateMap<UserContract, GetUserContractsResponse>()
+            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+            .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract));
+
+        #endregion
     }
 }

@@ -105,9 +105,13 @@ public class ContractExceptionMessages
     public const string Conflict = "Contract Already exist";
 }
 
-
 public class AddressExceptionMessages
 {
     public const string TitleConflict = "Title already exist";
     public const string NotFound = "Address not found";
+}
+
+public class UserContractExceptionMessages
+{
+    public const string NotFound = "User contract not found";
 }
