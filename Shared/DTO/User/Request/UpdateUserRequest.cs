@@ -1,7 +1,7 @@
 namespace Shared.DTO.User.Request;
 
 public sealed record UpdateUserRequest(
-    Guid Id,
+    Guid UserId,
     string Name,
     string Surname,
     string Email,

@@ -2,7 +2,7 @@ namespace Shared.DTO.User.Response;
 
 public class GetUserResponse : GenericResponse
 {
-    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
     public string Name { get; set; }
 
     public string Surname { get; set; }

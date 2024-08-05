@@ -161,7 +161,7 @@ public class AddressRepository : IAddressRepository
 
     private async Task HasConflict(CreateAddressRequest createAddressRequest)
     {
-        var isUserExist = await _applicationDbContext.Users.AnyAsync(u => u.Id == createAddressRequest.UserId);
+        var isUserExist = await _applicationDbContext.Users.AnyAsync(u => u.UserId == createAddressRequest.UserId);
 
         var isTitleExistForUser = await _applicationDbContext.Addresses.AnyAsync(a =>
             a.Title == createAddressRequest.Title && a.UserId == createAddressRequest.UserId);
@@ -175,7 +175,7 @@ public class AddressRepository : IAddressRepository
 
     private async Task HasConflict(UpdateAddressRequest updateAddressRequest)
     {
-        var isUserExist = await _applicationDbContext.Users.AnyAsync(u => u.Id == updateAddressRequest.UserId);
+        var isUserExist = await _applicationDbContext.Users.AnyAsync(u => u.UserId == updateAddressRequest.UserId);
 
         var isTitleExistForUser = await _applicationDbContext.Addresses.AnyAsync(a =>
             a.Title == updateAddressRequest.Title &&

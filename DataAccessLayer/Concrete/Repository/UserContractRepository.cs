@@ -87,7 +87,7 @@ public class UserContractRepository : IUserContractRepository
 
     public async Task HasConflict(CreateUserContractRequest createUserContractRequest)
     {
-        var isUserExist = await _applicationDbContext.Users.AnyAsync(u => u.Id == createUserContractRequest.UserId);
+        var isUserExist = await _applicationDbContext.Users.AnyAsync(u => u.UserId == createUserContractRequest.UserId);
 
         var isContractExist =
             await _applicationDbContext.Contracts.AnyAsync(c => c.ContractId == createUserContractRequest.ContractId);

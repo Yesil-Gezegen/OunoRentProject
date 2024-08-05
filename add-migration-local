@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Check if a migration name is provided
+if [ -z "$1" ]
+then
+  echo "Please provide a migration name."
+  exit 1
+fi
+
+MIGRATION_NAME=$1
+
+# Set the environment (optional)
+#export ASPNETCORE_ENVIRONMENT=Production
+
+# Run the dotnet ef command with the provided migration name
+dotnet ef migrations add $MIGRATION_NAME -p ./DataAccessLayer/DataAccessLayer.csproj -s ./OunoRentApi/OunoRentApi.csproj -o Migrations/LocalMigrations
+
+dotnet ef database update --project ./DataAccessLayer/DataAccessLayer.csproj --startup-project ./OunoRentApi/OunoRentApi.csproj -- --environment Development
+
+# Check if the migration command succeeded
+if [ $? -eq 0 ]
+then
+  echo "Migration '$MIGRATION_NAME' added successfully."
+else
+  echo "Failed to add migration '$MIGRATION_NAME'."
+fi
+

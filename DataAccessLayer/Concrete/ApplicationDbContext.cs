@@ -37,6 +37,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Channel> Channels { get; set; }
 
+    public DbSet<Test> Tests { get; set; }
     public override int SaveChanges()
     {
         UpdateAuditInformation();

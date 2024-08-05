@@ -44,7 +44,7 @@ public class UserRepository : IUserRepository
     public async Task<UserResponse> DeleteUser(Guid userId)
     {
         var deletedUser = _applicationDbContext.Users
-        .FirstOrDefault(x => x.Id == userId)
+        .FirstOrDefault(x => x.UserId == userId)
         ?? throw new NotFoundException(UserExceptionMessage.NotFound);
 
         _applicationDbContext.Users.Remove(deletedUser);
@@ -61,7 +61,7 @@ public class UserRepository : IUserRepository
     {
         var user = await _applicationDbContext.Users
         .AsNoTracking()
-        .Where(x => x.Id == userId)
+        .Where(x => x.UserId == userId)
         .FirstOrDefaultAsync()
         ?? throw new NotFoundException(UserExceptionMessage.NotFound);
 
@@ -112,7 +112,7 @@ public class UserRepository : IUserRepository
     public async Task<UserResponse> UpdateUser(UpdateUserRequest request)
     {
         var user = await _applicationDbContext.Users
-        .FirstOrDefaultAsync(x => x.Id == request.Id)
+        .FirstOrDefaultAsync(x => x.UserId == request.UserId)
         ?? throw new NotFoundException(UserExceptionMessage.NotFound);
 
         user.Name = request.Name;
