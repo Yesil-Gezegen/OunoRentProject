@@ -58,7 +58,13 @@ public static class ServiceExtensions
     private static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql(connectionString: configuration.GetConnectionString("DefaultConnection")));
+        
+        services.AddDbContext<LocalDbContext>(options =>
                     options.UseNpgsql(connectionString: configuration.GetConnectionString("DefaultConnection")));
+        
+        services.AddDbContext<RemoteDbContext>(options =>
+            options.UseNpgsql(connectionString: configuration.GetConnectionString("DefaultConnection")));
     }
 
     /// <summary>

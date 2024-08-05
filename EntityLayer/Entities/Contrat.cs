@@ -6,9 +6,9 @@ public class Contract : AuditTrailer
 
     public string Name { get; set; }
 
-    public int Version { get; set; }
+    public double Version { get; set; }
 
-    public int PreviousVersion { get; set; }
+    public double PreviousVersion { get; set; }
 
     public string Body { get; set; }
 

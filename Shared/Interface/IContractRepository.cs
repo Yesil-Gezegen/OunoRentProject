@@ -7,11 +7,7 @@ public interface IContractRepository
 {
     Task<ContractResponse> CreateContract(CreateContractRequest createContractRequest);
     
-    Task<ContractResponse> UpdateContract(UpdateContractRequest updateContractRequest);
-    
     Task<List<GetContractsResponse>> GetContracts();
     
-    Task<GetContractResponse> GetContract(Guid contractId);
-    
-    Task<Guid> DeleteContract(Guid contractId);
+    Task<GetContractResponse> GetContract(Guid contractId); 
 }

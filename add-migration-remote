@@ -13,9 +13,9 @@ MIGRATION_NAME=$1
 #export ASPNETCORE_ENVIRONMENT=Production
 
 # Run the dotnet ef command with the provided migration name
-dotnet ef migrations add $MIGRATION_NAME -p ./DataAccessLayer/DataAccessLayer.csproj -s ./OunoRentApi/OunoRentApi.csproj -o Migrations/RemoteMigrations
+dotnet ef migrations add $MIGRATION_NAME --context RemoteDbContext -p ./DataAccessLayer/DataAccessLayer.csproj -s ./OunoRentApi/OunoRentApi.csproj -o Migrations/RemoteMigrations
 
-dotnet ef database update --project ./DataAccessLayer/DataAccessLayer.csproj --startup-project ./OunoRentApi/OunoRentApi.csproj -- --environment Production
+dotnet ef database update --context RemoteDbContext --project ./DataAccessLayer/DataAccessLayer.csproj --startup-project ./OunoRentApi/OunoRentApi.csproj -- --environment Production
 
 # Check if the migration command succeeded
 if [ $? -eq 0 ]

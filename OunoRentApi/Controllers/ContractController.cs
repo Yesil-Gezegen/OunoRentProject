@@ -41,20 +41,4 @@ public class ContractController : ControllerBase
         
         return Ok(result);
     }
-    
-    [HttpPut("{contractId:guid}")]
-    public async Task<IActionResult> UpdateContract(UpdateContractRequest updateContractRequest)
-    {
-        var result = await _mediator.Send(new UpdateContractCommand(updateContractRequest));
-        
-        return Ok(result);
-    }
-    
-    [HttpDelete("{contractId:guid}")]
-    public async Task<IActionResult> DeleteContract(Guid contractId)
-    {
-        var result = await _mediator.Send(new DeleteContractCommand(contractId));
-        
-        return Ok(result);
-    }
 }

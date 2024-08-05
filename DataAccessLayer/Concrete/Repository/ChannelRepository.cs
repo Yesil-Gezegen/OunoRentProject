@@ -61,8 +61,13 @@ public class ChannelRepository : IChannelRepository
                       ?? throw new NotFoundException(ChannelExceptionMessages.NotFound);
 
         channel.Name = updateChannelRequest.Name.Trim();
-        channel.Logo = await _imageService.SaveImageAsync(updateChannelRequest.Logo);
         channel.IsActive = updateChannelRequest.IsActive;
+
+        if (updateChannelRequest.Logo != null)
+        {
+            await _imageService.DeleteImageAsync(channel.Logo);
+            channel.Logo = await _imageService.SaveImageAsync(updateChannelRequest.Logo);
+        }
 
         await _applicationDbContext.SaveChangesAsync();
         

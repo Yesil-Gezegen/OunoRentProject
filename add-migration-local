@@ -13,9 +13,9 @@ MIGRATION_NAME=$1
 #export ASPNETCORE_ENVIRONMENT=Production
 
 # Run the dotnet ef command with the provided migration name
-dotnet ef migrations add $MIGRATION_NAME -p ./DataAccessLayer/DataAccessLayer.csproj -s ./OunoRentApi/OunoRentApi.csproj -o Migrations/LocalMigrations
+dotnet ef migrations add $MIGRATION_NAME -p ./DataAccessLayer/DataAccessLayer.csproj --context LocalDbContext -s ./OunoRentApi/OunoRentApi.csproj -o Migrations/LocalMigrations
 
-dotnet ef database update --project ./DataAccessLayer/DataAccessLayer.csproj --startup-project ./OunoRentApi/OunoRentApi.csproj -- --environment Development
+dotnet ef database update --context LocalDbContext --project ./DataAccessLayer/DataAccessLayer.csproj --startup-project ./OunoRentApi/OunoRentApi.csproj -- --environment Development
 
 # Check if the migration command succeeded
 if [ $? -eq 0 ]

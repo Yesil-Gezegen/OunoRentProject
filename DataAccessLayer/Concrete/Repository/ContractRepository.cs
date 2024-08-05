@@ -24,10 +24,24 @@ public class ContractRepository : IContractRepository
     public async Task<ContractResponse> CreateContract(CreateContractRequest createContractRequest)
     {
         var contract = new Contract();
+
+        var lastAddedContract = await _applicationDbContext.Contracts
+            .AsNoTracking()
+            .OrderByDescending(c => c.Version)
+            .FirstOrDefaultAsync();
+
+        if (lastAddedContract == null)
+        {
+            contract.Version = 0;
+            contract.PreviousVersion = 0;
+        }
+        else
+        {
+            contract.Version = (Math.Round(lastAddedContract.Version, 2)) + 0.1;
+            contract.PreviousVersion = lastAddedContract.Version;
+        }
         
         contract.Name = createContractRequest.Name.Trim();
-        contract.Version = 1;
-        contract.PreviousVersion = 0;
         contract.Body = createContractRequest.Body.Trim();
         contract.Type = createContractRequest.Type;
         contract.CreateDate = DateTime.UtcNow;
@@ -35,38 +49,11 @@ public class ContractRepository : IContractRepository
         contract.IsActive = createContractRequest.IsActive;
 
         _applicationDbContext.Contracts.Add(contract);
-        
+
         await _applicationDbContext.SaveChangesAsync();
-        
+
         return _mapper.Map<ContractResponse>(contract);
     }
-
-
-    #endregion
-
-    #region UpdateContract
-
-    public async Task<ContractResponse> UpdateContract(UpdateContractRequest updateContractRequest)
-    {
-        var contract = await _applicationDbContext.Contracts
-                           .FirstOrDefaultAsync(x => x.ContractId == updateContractRequest.ContractId)
-                       ?? throw new NotFoundException(ContractExceptionMessages.NotFound);
-        
-        contract.Name = updateContractRequest.Name.Trim();
-        contract.Version = contract.Version + 1;
-        contract.PreviousVersion = contract.Version -1;
-        contract.Body = updateContractRequest.Body.Trim();
-        contract.Type = updateContractRequest.Type;
-        contract.RequiresAt = updateContractRequest.RequiresAt.Trim();
-        contract.IsActive = updateContractRequest.IsActive;
-
-        _applicationDbContext.Contracts.Update(contract);
-        
-        await _applicationDbContext.SaveChangesAsync();
-        
-        return _mapper.Map<ContractResponse>(contract);
-    }
-
 
     #endregion
 
@@ -78,10 +65,9 @@ public class ContractRepository : IContractRepository
             .AsNoTracking()
             .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();
-        
+
         return _mapper.Map<List<GetContractsResponse>>(contractList);
     }
-
 
     #endregion
 
@@ -91,30 +77,11 @@ public class ContractRepository : IContractRepository
     {
         var contact = await _applicationDbContext.Contracts
                           .AsNoTracking()
-                          .FirstOrDefaultAsync(x=> x.ContractId == contractId)
+                          .FirstOrDefaultAsync(x => x.ContractId == contractId)
                       ?? throw new NotFoundException(ContractExceptionMessages.NotFound);
-        
+
         return _mapper.Map<GetContractResponse>(contact);
     }
 
-
     #endregion
-
-    #region DeleteContract
-
-    public async Task<Guid> DeleteContract(Guid contractId)
-    {
-        var contract = await _applicationDbContext.Contracts
-                           .FirstOrDefaultAsync(x => x.ContractId == contractId)
-                       ?? throw new NotFoundException(ContractExceptionMessages.NotFound);
-        
-        _applicationDbContext.Contracts.Remove(contract);
-        
-        await _applicationDbContext.SaveChangesAsync();
-        
-        return contract.ContractId;
-    }
-
-    #endregion
-    
 }
