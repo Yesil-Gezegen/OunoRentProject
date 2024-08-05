@@ -534,4 +534,4 @@ Temporary Items
 
 .idea
 .vscode
-/DataAccessLayer/Migrations/
+/DataAccessLayer/Migrations/LocalMigrations
