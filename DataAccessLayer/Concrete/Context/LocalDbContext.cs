@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccessLayer.Concrete;
+namespace DataAccessLayer.Concrete.Context;
 
 public class LocalDbContext : ApplicationDbContext
 {

@@ -1,9 +1,10 @@
 // DataAccessLayer/Concrete/ApplicationDbContext.cs
-using Microsoft.EntityFrameworkCore;
-using EntityLayer.Entities;
-using EntityLayer;
 
-namespace DataAccessLayer.Concrete;
+using EntityLayer;
+using EntityLayer.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace DataAccessLayer.Concrete.Context;
 
 public class ApplicationDbContext : DbContext
 {
