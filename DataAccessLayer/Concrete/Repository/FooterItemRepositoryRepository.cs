@@ -57,7 +57,8 @@ public class FooterItemRepository : IFooterItemRepository
     public async Task<GetFooterItemResponse> GetFooterItem(Guid footerItemId)
     {
         var footerItem = await _applicationDbContext.FooterItems
-            .FirstOrDefaultAsync(x=> x.FooterItemId == footerItemId);
+            .FirstOrDefaultAsync(x=> x.FooterItemId == footerItemId)
+            ?? throw new NotFoundException(FooterItemExceptionMessages.NotFound);
         
         return _mapper.Map<GetFooterItemResponse>(footerItem);
         
