@@ -48,6 +48,7 @@ public static class ServiceExtensions
         services.AddScoped<IAddressRepository, AddressRepository>();
         services.AddScoped<IUserContractRepository, UserContractRepository>();
         services.AddScoped<IChannelRepository, ChannelRepository>();
+        services.AddScoped<IWarehouseRepository, WarehouseRepository>();
     }
 
     /// <summary>

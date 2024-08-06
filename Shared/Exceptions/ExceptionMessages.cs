@@ -121,3 +121,9 @@ public class UserContractExceptionMessages
 {
     public const string NotFound = "User contract not found";
 }
+
+public class WarehouseExceptionMessages
+{
+    public const string NotFound = "Warehouse not found";
+    public const string Conflict = "Warehouse Already exist";
+}
