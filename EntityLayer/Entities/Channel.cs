@@ -9,4 +9,6 @@ public class Channel : AuditTrailer
     public string Logo { get; set; }
 
     public Boolean IsActive { get; set; }
+
+    public ICollection<WarehouseConnection> WarehouseConnections { get; set; }
 }

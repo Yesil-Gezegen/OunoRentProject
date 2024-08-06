@@ -127,3 +127,9 @@ public class WarehouseExceptionMessages
     public const string NotFound = "Warehouse not found";
     public const string Conflict = "Warehouse Already exist";
 }
+
+public class WarehouseConnectionExceptionMessages
+{
+    public const string NotFound = "WarehouseConnection not found";
+    public const string Conflict = "WarehouseConnection Already exist";
+}

@@ -20,6 +20,7 @@ using Shared.DTO.MenuItem.Response;
 using Shared.DTO.Price.Response;
 using Shared.DTO.UserContracts.Response;
 using Shared.DTO.Warehouse.Response;
+using Shared.DTO.WarehouseConnection.Response;
 
 namespace BusinessLayer.Mapper;
 
@@ -182,6 +183,12 @@ public class MapperProfile : Profile
         CreateMap<Warehouse, WarehouseResponse>();
         CreateMap<Warehouse, GetWarehousesResponse>();
         CreateMap<Warehouse, GetWarehouseResponse>();
+
+        #endregion
+
+        #region WarehouseConnection
+
+        CreateMap<WarehouseConnection, WarehouseConnectionResponse>();
 
         #endregion
     }

@@ -39,6 +39,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Channel> Channels { get; set; }
 
     public DbSet<Warehouse> Warehouses { get; set; }
+
+    public DbSet<WarehouseConnection> WarehouseConnections { get; set; }
     
     public override int SaveChanges()
     {
