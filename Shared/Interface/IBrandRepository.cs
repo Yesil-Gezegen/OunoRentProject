@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Shared.DTO.Brand.Request;
 using Shared.DTO.Brand.Response;
 
@@ -7,7 +8,7 @@ public interface IBrandRepository
 {
     Task<BrandResponse> CreateBrand(CreateBrandRequest createBrandRequest);
     
-    Task<List<GetBrandsResponse>> GetBrands();
+    Task<List<GetBrandsResponse>> GetBrands(Expression<Func<GetBrandsResponse, bool>>? predicate = null);
     
     Task<GetBrandResponse> GetBrand(Guid brandId);
     

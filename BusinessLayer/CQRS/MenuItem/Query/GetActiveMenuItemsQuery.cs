@@ -17,7 +17,8 @@ public class GetActiveMenuItemsQueryHandler : IRequestHandler<GetActiveMenuItems
 
     public async Task<List<GetMenuItemsResponse>> Handle(GetActiveMenuItemsQuery request, CancellationToken cancellationToken)
     {
-        var menuItemsResponse = await _menuItemRepository.GetMenuItemsAsync(mi => mi.IsActive);
+        var menuItemsResponse = 
+            await _menuItemRepository.GetMenuItemsAsync(mi => mi.IsActive);
         return menuItemsResponse;
     }
 }

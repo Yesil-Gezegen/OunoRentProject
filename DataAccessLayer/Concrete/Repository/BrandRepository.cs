@@ -1,4 +1,6 @@
+using System.Linq.Expressions;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.Middlewares;
 using DataAccessLayer.Concrete.Context;
 using EntityLayer.Entities;
@@ -40,15 +42,24 @@ public class BrandRepository : IBrandRepository
          return brandResponse;
     }
 
-    public async Task<List<GetBrandsResponse>> GetBrands()
+    public async Task<List<GetBrandsResponse>> GetBrands(Expression<Func<GetBrandsResponse, bool>>? predicate = null)
     {
-        var brandList = await _applicationDbContext.Brands
+        var brands = _applicationDbContext.Brands
+            .AsNoTracking();
+
+        if (predicate != null)
+        {
+            var brandPredicate = _mapper.MapExpression<Expression<Func<Brand, bool>>>(predicate);
+            brands = brands.Where(brandPredicate);
+        }
+        
+        var brandList = await brands
             .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();
-
-        var categoriesResponse = _mapper.Map<List<GetBrandsResponse>>(brandList);
         
-        return categoriesResponse;
+        var brandResponse = _mapper.Map<List<GetBrandsResponse>>(brandList);
+
+        return brandResponse;
     }
 
     public async Task<GetBrandResponse> GetBrand(Guid brandId)

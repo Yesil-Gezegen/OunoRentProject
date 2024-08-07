@@ -11,5 +11,6 @@ public record CreateBlogRequest(
     int OrderNumber,
     Guid SubCategoryId,
     IFormFile LargeImage,
-    IFormFile SmallImage
+    IFormFile SmallImage,
+    Boolean IsActive
 );

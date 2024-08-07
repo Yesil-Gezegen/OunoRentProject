@@ -49,6 +49,7 @@ public class BlogRepository : IBlogRepository
         blog.Body = sanitizer.Sanitize(createBlogRequest.Body.Trim());
         blog.Title = sanitizer.Sanitize(createBlogRequest.Title.Trim());
         blog.Tags = sanitizer.Sanitize(createBlogRequest.Tags.Trim());
+        blog.IsActive = createBlogRequest.IsActive;
 
         var result = await _applicationDbContext.Blogs.AddAsync(blog);
 

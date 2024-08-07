@@ -1,4 +1,6 @@
+using System.Linq.Expressions;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.Middlewares;
 using DataAccessLayer.Concrete.Context;
 using EntityLayer.Entities;
@@ -37,15 +39,26 @@ public class ChannelRepository : IChannelRepository
         return _mapper.Map<ChannelResponse>(channel);
     }
 
-    public async Task<List<GetChannelsResponse>> GetChannels()
+    public async Task<List<GetChannelsResponse>> GetChannels(Expression<Func<GetChannelsResponse, bool>>? predicate = null)
     {
-        var channelList = await _applicationDbContext.Channels
+        var channels = _applicationDbContext.Channels
+            .AsNoTracking();
+
+        if (predicate != null)
+        {
+            var channelPredicate = _mapper.MapExpression<Expression<Func<Channel, bool>>>(predicate);
+            channels = channels.Where(channelPredicate);
+        }
+        
+        var channelList = await channels
             .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();
         
-        return _mapper.Map<List<GetChannelsResponse>>(channelList);
-    }
+        var channelResponse = _mapper.Map<List<GetChannelsResponse>>(channelList);
 
+        return channelResponse;
+    }
+    
     public async Task<GetChannelResponse> GetChannel(Guid channelId)
     {
         var channel = await _applicationDbContext.Channels
