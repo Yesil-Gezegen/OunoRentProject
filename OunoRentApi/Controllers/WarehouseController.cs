@@ -36,6 +36,14 @@ public class WarehouseController : ControllerBase
         return Ok(warehouses);
     }
     
+    [HttpGet("getActive")]
+    public async Task<IActionResult> GetActiveWarehouses()
+    {
+        var warehouses = await _mediator.Send(new GetActiveWarehousesQuery());
+
+        return Ok(warehouses);
+    }
+    
     [HttpGet("{warehouseId:guid}")]
     public async Task<IActionResult> GetWarehouse(Guid warehouseId)
     {

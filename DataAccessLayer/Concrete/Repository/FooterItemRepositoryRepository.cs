@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.Middlewares;
 using DataAccessLayer.Concrete.Context;
 using EntityLayer.Entities;
@@ -45,15 +46,26 @@ public class FooterItemRepository : IFooterItemRepository
         return _mapper.Map<FooterItemResponse>(footerItem);
     }
 
-    public async Task<List<GetFooterItemsResponse>> GetFooterItems()
+    public async Task<List<GetFooterItemsResponse>> GetFooterItems(Expression<Func<GetFooterItemsResponse, bool>>? predicate = null)
     {
-        var footerItemList = await _applicationDbContext.FooterItems
+        var footerItemList = _applicationDbContext.FooterItems
+            .AsNoTracking();
+        
+        if (predicate != null)
+        {
+            var footerItemPredicate = _mapper.MapExpression<Expression<Func<FooterItem, bool>>>(predicate);
+            footerItemList = footerItemList.Where(footerItemPredicate);
+        }
+        
+        var footerItems = await footerItemList
             .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();
         
-        return _mapper.Map<List<GetFooterItemsResponse>>(footerItemList);
-    }
+        var footerItemResponse = _mapper.Map<List<GetFooterItemsResponse>>(footerItems);
 
+        return footerItemResponse;
+    }
+    
     public async Task<GetFooterItemResponse> GetFooterItem(Guid footerItemId)
     {
         var footerItem = await _applicationDbContext.FooterItems

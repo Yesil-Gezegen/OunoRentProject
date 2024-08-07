@@ -26,8 +26,6 @@ public class ContractRepository : IContractRepository
 
    public async Task<ContractResponse> CreateContract(CreateContractRequest createContractRequest)
 {
-    try
-    {
         var contract = new Contract();
 
         // Tüm sözleşmeleri getir ve bellek içinde aynı isimde sözleşme olup olmadığını kontrol et
@@ -76,13 +74,6 @@ public class ContractRepository : IContractRepository
 
         // Yeni sözleşmeyi ContractResponse tipine dönüştür ve döndür
         return _mapper.Map<ContractResponse>(contract);
-    }
-    catch (Exception ex)
-    {
-        // Hata yakalama ve loglama
-        // Loglama kodunuza uygun şekilde buraya ekleyebilirsiniz
-        throw new Exception($"Something went wrong: {ex.Message}");
-    }
 }
     #endregion
 
