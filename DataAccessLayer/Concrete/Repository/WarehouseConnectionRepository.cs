@@ -4,8 +4,6 @@ using BusinessLayer.Middlewares;
 using DataAccessLayer.Concrete.Context;
 using EntityLayer.Entities;
 using Microsoft.EntityFrameworkCore;
-using Shared.DTO.Warehouse.Request;
-using Shared.DTO.Warehouse.Response;
 using Shared.DTO.WarehouseConnection.Request;
 using Shared.DTO.WarehouseConnection.Response;
 using Shared.Interface;

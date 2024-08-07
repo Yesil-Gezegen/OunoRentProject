@@ -1,8 +1,11 @@
 using BusinessLayer.CQRS.Warehouse.Command;
 using BusinessLayer.CQRS.Warehouse.Query;
+using BusinessLayer.CQRS.WarehouseConnection.Command;
+using BusinessLayer.CQRS.WarehouseConnection.Query;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Warehouse.Request;
+using Shared.DTO.WarehouseConnection.Request;
 
 namespace OunoRentApi.Controllers;
 
@@ -56,5 +59,45 @@ public class WarehouseController : ControllerBase
         var warehouse = await _mediator.Send(new DeleteWarehouseCommand(warehouseId));
 
         return Ok(warehouse);
+    }
+    
+      
+    [HttpPost("warehouseconnection/")]
+    public async Task<IActionResult> CreateWarehouseConnection([FromBody] CreateWarehouseConnectionRequest request)
+    {
+        var result = await _mediator.Send(new CreateWarehouseConnectionCommand(request));
+        return Ok(result);
+    }
+
+    [HttpGet("warehouseconnection/")]
+    public async Task<IActionResult> GetWarehouseConnections()
+    {
+        var result = await _mediator.Send(new GetWarehouseConnectionsQuery());
+        
+        return Ok(result);
+    }
+    
+    [HttpGet("warehouseconnection/{warehouseConnectionId:guid}")]
+    public async Task<IActionResult> GetWarehouseConnection(Guid warehouseConnectionId)
+    {
+        var result = await _mediator.Send(new GetWarehouseConnectionQuery(warehouseConnectionId));
+        
+        return Ok(result);
+    }
+    
+    [HttpPut("warehouseconnection/{warehouseConnectionId:guid}")]
+    public async Task<IActionResult> UpdateWarehouseConnection([FromBody] UpdateWarehouseConnectionRequest request)
+    {
+        var result = await _mediator.Send(new UpdateWarehouseConnectionCommand(request));
+        
+        return Ok(result);
+    }
+
+    [HttpDelete("warehouseconnection/{warehouseConnectionId:guid}")]
+    public async Task<IActionResult> DeleteWarehouseConnection(Guid warehouseConnectionId)
+    {
+        var result = await _mediator.Send(new DeleteWarehouseConnectionCommand(warehouseConnectionId));
+
+        return Ok(result);
     }
 }
