@@ -116,7 +116,9 @@ public class FeatureRepository : IFeatureRepository
             features = features.Where(featurePredicate);
         }
 
-        return _mapper.Map<List<GetFeaturesResponse>>(features);
+        var featureList = await features.ToListAsync(); 
+
+        return _mapper.Map<List<GetFeaturesResponse>>(featureList);
     }
 
     #endregion

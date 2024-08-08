@@ -1,4 +1,6 @@
+using System.Linq.Expressions;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.Middlewares;
 using DataAccessLayer.Concrete.Context;
 using EntityLayer.Entities;
@@ -15,12 +17,16 @@ public class ChannelRepository : IChannelRepository
     private readonly IMapper _mapper;
     private IImageService _imageService;
 
+
+   
     public ChannelRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IImageService imageService)
     {
         _applicationDbContext = applicationDbContext;
         _mapper = mapper;
         _imageService = imageService;
     }
+
+    #region CreateChannel
 
     public async Task<ChannelResponse> CreateChannel(CreateChannelRequest createChannelRequest)
     {
@@ -37,14 +43,33 @@ public class ChannelRepository : IChannelRepository
         return _mapper.Map<ChannelResponse>(channel);
     }
 
-    public async Task<List<GetChannelsResponse>> GetChannels()
+    #endregion
+
+    #region GetChannels
+
+    public async Task<List<GetChannelsResponse>> GetChannels(Expression<Func<GetChannelsResponse, bool>>? predicate = null)
     {
-        var channelList = await _applicationDbContext.Channels
+        var channels = _applicationDbContext.Channels
+            .AsNoTracking();
+
+        if (predicate != null)
+        {
+            var channelPredicate = _mapper.MapExpression<Expression<Func<Channel, bool>>>(predicate);
+            channels = channels.Where(channelPredicate);
+        }
+        
+        var channelList = await channels
             .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();
         
-        return _mapper.Map<List<GetChannelsResponse>>(channelList);
+        var channelResponse = _mapper.Map<List<GetChannelsResponse>>(channelList);
+
+        return channelResponse;
     }
+
+    #endregion
+
+    #region GetChannel
 
     public async Task<GetChannelResponse> GetChannel(Guid channelId)
     {
@@ -54,6 +79,10 @@ public class ChannelRepository : IChannelRepository
         
         return _mapper.Map<GetChannelResponse>(channel);
     }
+
+    #endregion
+
+    #region UpdateChannel
 
     public async Task<ChannelResponse> UpdateChannel(UpdateChannelRequest updateChannelRequest)
     {
@@ -75,6 +104,10 @@ public class ChannelRepository : IChannelRepository
         return _mapper.Map<ChannelResponse>(channel);
     }
 
+    #endregion
+
+    #region DeleteChannel
+
     public async Task<Guid> DeleteChannel(Guid channelId)
     {
         var channel = await _applicationDbContext.Channels
@@ -87,4 +120,8 @@ public class ChannelRepository : IChannelRepository
         
         return channelId;
     }
+
+    #endregion
+
+   
 }

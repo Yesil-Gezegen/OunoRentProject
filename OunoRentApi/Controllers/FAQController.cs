@@ -24,7 +24,7 @@ public class FAQController : Controller
         return Ok(result);
     }
 
-    [HttpGet("GetActive")]
+    [HttpGet("getActive")]
     public async Task<IActionResult> GetActiveFAQsAsync()
     {
         var result = await _mediator.Send(new GetActiveFAQsQuery());

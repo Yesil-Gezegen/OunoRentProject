@@ -28,7 +28,7 @@ public class CategoryController : ControllerBase
         return Ok(categories);
     }
 
-    [HttpGet("GetActive")]
+    [HttpGet("getActive")]
     public async Task<IActionResult> GetActiveCategories()
     {
         var categories = await _mediator.Send(new GetActiveCategoriesQuery());

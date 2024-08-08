@@ -24,7 +24,7 @@ public class FeaturedCategoryController : Controller
         return Ok(result);
     }
     
-    [HttpGet("GetActive")]
+    [HttpGet("getActive")]
     public async Task<IActionResult> GetActiveFeaturedCategoriesAsync()
     {
         var result = await _mediator.Send(new GetActiveFeaturedCategoriesQuery());

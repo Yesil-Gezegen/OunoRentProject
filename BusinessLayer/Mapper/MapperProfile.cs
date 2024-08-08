@@ -188,6 +188,7 @@ public class MapperProfile : Profile
 
         #region WarehouseConnection
 
+        CreateMap<WarehouseConnection, GetWarehouseConnectionsResponse>();
         CreateMap<WarehouseConnection, WarehouseConnectionResponse>();
 
         #endregion

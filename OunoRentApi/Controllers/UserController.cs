@@ -8,7 +8,7 @@ namespace OunoRentApi.Controllers;
 
 [ApiController]
 //[Authorize]
-[Route("api/user")]
+[Route("api/[controller]")]
 public class UserController : ControllerBase
 {
     private readonly IMediator _mediator;

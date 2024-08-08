@@ -1,4 +1,6 @@
+using System.Linq.Expressions;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.Middlewares;
 using DataAccessLayer.Concrete.Context;
 using EntityLayer.Entities;
@@ -22,26 +24,43 @@ public class ContractRepository : IContractRepository
 
     #region CreateContract
 
-    public async Task<ContractResponse> CreateContract(CreateContractRequest createContractRequest)
-    {
+   public async Task<ContractResponse> CreateContract(CreateContractRequest createContractRequest)
+{
         var contract = new Contract();
 
-        var lastAddedContract = await _applicationDbContext.Contracts
+        // Tüm sözleşmeleri getir ve bellek içinde aynı isimde sözleşme olup olmadığını kontrol et
+        var existingContracts = await _applicationDbContext.Contracts
             .AsNoTracking()
-            .OrderByDescending(c => c.Version)
-            .FirstOrDefaultAsync();
+            .ToListAsync();
 
-        if (lastAddedContract == null)
+        var existingContractWithSameName = existingContracts
+            .Where(c => c.Name.Trim().Equals(createContractRequest.Name.Trim(), StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        if (existingContractWithSameName.Count == 0)
         {
-            contract.Version = 0;
-            contract.PreviousVersion = 0;
+            // Aynı isimde sözleşme yoksa versiyon 1.0 ile başlat
+            contract.Version = 1.0;
+            contract.PreviousVersion = 0.0;
         }
         else
         {
-            contract.Version = (Math.Round(lastAddedContract.Version, 2)) + 0.1;
-            contract.PreviousVersion = lastAddedContract.Version;
+            // Aynı isimde sözleşme varsa, en son eklenenin versiyonunu artır
+            var lastAddedContract = existingContractWithSameName.MaxBy(c => c.Version);
+
+            if (lastAddedContract != null)
+            {
+                contract.Version = Math.Round(lastAddedContract.Version + 0.1, 1);
+                contract.PreviousVersion = lastAddedContract.Version;
+            }
+            else
+            {
+                contract.Version = 1.0;
+                contract.PreviousVersion = 0.0;
+            }
         }
-        
+
+        // Yeni sözleşme bilgilerini belirle
         contract.Name = createContractRequest.Name.Trim();
         contract.Body = createContractRequest.Body.Trim();
         contract.Type = createContractRequest.Type;
@@ -49,26 +68,38 @@ public class ContractRepository : IContractRepository
         contract.RequiresAt = createContractRequest.RequiresAt.Trim();
         contract.IsActive = createContractRequest.IsActive;
 
+        // Yeni sözleşmeyi veritabanına ekle ve değişiklikleri kaydet
         _applicationDbContext.Contracts.Add(contract);
-
         await _applicationDbContext.SaveChangesAsync();
 
+        // Yeni sözleşmeyi ContractResponse tipine dönüştür ve döndür
         return _mapper.Map<ContractResponse>(contract);
-    }
-
+}
     #endregion
 
     #region GetContracts
 
-    public async Task<List<GetContractsResponse>> GetContracts()
+    public async Task<List<GetContractsResponse>> GetContracts(
+        Expression<Func<GetContractsResponse, bool>>? predicate = null)
     {
-        var contractList = await _applicationDbContext.Contracts
-            .AsNoTracking()
+        var contracts = _applicationDbContext.Contracts
+            .AsNoTracking();
+
+        if (predicate != null)
+        {
+            var contractPredicate = _mapper.MapExpression<Expression<Func<Contract, bool>>>(predicate);
+            contracts = contracts.Where(contractPredicate);
+        }
+        
+        var contractList = await contracts
             .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();
-
-        return _mapper.Map<List<GetContractsResponse>>(contractList);
+        
+        var contractResponse = _mapper.Map<List<GetContractsResponse>>(contractList);
+        
+        return contractResponse;
     }
+
 
     #endregion
 
@@ -82,6 +113,17 @@ public class ContractRepository : IContractRepository
                       ?? throw new NotFoundException(ContractExceptionMessages.NotFound);
 
         return _mapper.Map<GetContractResponse>(contact);
+    }
+
+    #endregion
+
+    #region IsExist
+
+    private async Task<bool> IsExistGeneric(Expression<Func<Contract, bool>> filter)
+    {
+        var result = await _applicationDbContext.Contracts.AnyAsync(filter);
+
+        return result;
     }
 
     #endregion

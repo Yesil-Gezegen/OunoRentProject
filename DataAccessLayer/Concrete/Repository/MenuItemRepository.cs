@@ -102,10 +102,6 @@ public class MenuItemRepository : IMenuItemRepository
             menuItems = menuItems.Where(menuItemPredicate);
         }
 
-        var entity = await _applicationDbContext.MenuItems
-            .AsNoTracking()
-            .ToListAsync();
-
         var menuItemsList = await menuItems
             .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();

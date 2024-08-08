@@ -1,11 +1,10 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.Middlewares;
 using DataAccessLayer.Concrete.Context;
 using EntityLayer.Entities;
 using Microsoft.EntityFrameworkCore;
-using Shared.DTO.Warehouse.Request;
-using Shared.DTO.Warehouse.Response;
 using Shared.DTO.WarehouseConnection.Request;
 using Shared.DTO.WarehouseConnection.Response;
 using Shared.Interface;
@@ -44,16 +43,28 @@ public class WarehouseConnectionRepository : IWarehouseConnectionRepository
         return _mapper.Map<WarehouseConnectionResponse>(warehouseConnection);
     }
 
+
+
     #endregion
 
     #region GetWarehouseConnections
-
-    public async Task<List<GetWarehouseConnectionsResponse>> GetWarehouseConnections()
+    
+    public async Task<List<GetWarehouseConnectionsResponse>> GetWarehouseConnections(
+        Expression<Func<GetWarehouseConnectionsResponse, bool>>? predicate = null)
     {
-        var warehouseConnectionList = await _applicationDbContext.WarehouseConnections
+        var warehouseConnections = _applicationDbContext.WarehouseConnections
             .Include(x => x.Warehouse)
             .Include(x => x.Channel)
-            .AsNoTracking()
+            .AsNoTracking();
+
+        if (predicate != null)
+        {
+            var warehouseConnectionPredicate = _mapper.MapExpression<Expression<Func<WarehouseConnection, bool>>>(predicate);
+            warehouseConnections = warehouseConnections.Where(warehouseConnectionPredicate);
+        }
+
+        var warehouseConnectionList = await warehouseConnections
+            .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .Select(x => new GetWarehouseConnectionsResponse
             {
                 WarehouseConnectionId = x.WarehouseConnectionId,

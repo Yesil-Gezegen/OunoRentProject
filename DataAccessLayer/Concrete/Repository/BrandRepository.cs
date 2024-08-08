@@ -1,4 +1,6 @@
+using System.Linq.Expressions;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.Middlewares;
 using DataAccessLayer.Concrete.Context;
 using EntityLayer.Entities;
@@ -14,13 +16,15 @@ public class BrandRepository : IBrandRepository
     private readonly ApplicationDbContext _applicationDbContext;
     private readonly IImageService _imageService;
     private readonly IMapper _mapper;
-
+    
     public BrandRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IImageService imageService)
     {
         _applicationDbContext = applicationDbContext;
         _mapper = mapper;
         _imageService = imageService;
     }
+
+    #region CreateBrand
 
     public async Task<BrandResponse> CreateBrand(CreateBrandRequest createBrandRequest)
     {
@@ -31,25 +35,43 @@ public class BrandRepository : IBrandRepository
         brand.ShowOnBrands = createBrandRequest.ShowOnBrands;
         brand.IsActive = createBrandRequest.IsActive;
         
-         _applicationDbContext.Brands.Add(brand);
+        _applicationDbContext.Brands.Add(brand);
          
-         await _applicationDbContext.SaveChangesAsync();
+        await _applicationDbContext.SaveChangesAsync();
          
-         var brandResponse = _mapper.Map<BrandResponse>(brand);
+        var brandResponse = _mapper.Map<BrandResponse>(brand);
 
-         return brandResponse;
+        return brandResponse;
     }
 
-    public async Task<List<GetBrandsResponse>> GetBrands()
+    #endregion
+
+    #region GetBrands
+
+    public async Task<List<GetBrandsResponse>> GetBrands(Expression<Func<GetBrandsResponse, bool>>? predicate = null)
     {
-        var brandList = await _applicationDbContext.Brands
+        var brands = _applicationDbContext.Brands
+            .AsNoTracking();
+
+        if (predicate != null)
+        {
+            var brandPredicate = _mapper.MapExpression<Expression<Func<Brand, bool>>>(predicate);
+            brands = brands.Where(brandPredicate);
+        }
+        
+        var brandList = await brands
             .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();
-
-        var categoriesResponse = _mapper.Map<List<GetBrandsResponse>>(brandList);
         
-        return categoriesResponse;
+        var brandResponse = _mapper.Map<List<GetBrandsResponse>>(brandList);
+
+        return brandResponse;
     }
+
+
+    #endregion
+
+    #region GetBrand
 
     public async Task<GetBrandResponse> GetBrand(Guid brandId)
     {
@@ -61,6 +83,10 @@ public class BrandRepository : IBrandRepository
 
         return brandResponse;
     }
+
+    #endregion
+
+    #region UpdateBrand
 
     public async Task<BrandResponse> UpdateBrand(UpdateBrandRequest updateBrandRequest)
     {
@@ -85,13 +111,17 @@ public class BrandRepository : IBrandRepository
         return brandResponse;
     }
 
+    #endregion
+
+    #region DeleteBrand
+
     public async Task<Guid> DeleteBrand(Guid brandId)
     {
         var brand = await _applicationDbContext.Brands
                         .FirstOrDefaultAsync(x => x.BrandId == brandId)
                     ?? throw new NotFoundException(BrandExceptionMessages.NotFound);
 
-        _imageService.DeleteImageAsync(brand.Logo);
+       await _imageService.DeleteImageAsync(brand.Logo);
         
         _applicationDbContext.Brands.Remove(brand);
 
@@ -99,4 +129,7 @@ public class BrandRepository : IBrandRepository
 
         return brandId;
     }
+
+    #endregion
+  
 }

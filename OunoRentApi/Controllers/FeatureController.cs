@@ -24,7 +24,7 @@ public class FeatureController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("GetActive")]
+    [HttpGet("getActive")]
     public async Task<IActionResult> GetActiveFeaturesAsync()
     {
         var result = await _mediator.Send(new GetActiveFeaturesQuery());

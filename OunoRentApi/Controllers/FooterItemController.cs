@@ -31,6 +31,13 @@ public class FooterItemController : ControllerBase
         return Ok(result);
     }
     
+    [HttpGet("getActive")]
+    public async Task<IActionResult> GetActiveFooterItems()
+    {
+        var result = await _mediator.Send(new GetActiveFooterItemsQuery());
+        return Ok(result);
+    }
+    
     [HttpGet("{footerItemId:guid}")]
     public async Task<IActionResult> GetFooterItem(Guid footerItemId)
     {

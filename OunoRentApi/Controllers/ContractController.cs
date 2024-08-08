@@ -34,6 +34,16 @@ public class ContractController : ControllerBase
         return Ok(result);
     }
     
+    [HttpGet("getActive")]
+    public async Task<IActionResult> GetActiveContracts()
+    {
+        var result = await _mediator.Send(new GetActiveContractsQuery());
+        
+        return Ok(result);
+    }
+    
+    
+    
     [HttpGet("{contractId:guid}")]
     public async Task<IActionResult> GetContract(Guid contractId)
     {

@@ -1,8 +1,11 @@
 using BusinessLayer.CQRS.Warehouse.Command;
 using BusinessLayer.CQRS.Warehouse.Query;
+using BusinessLayer.CQRS.WarehouseConnection.Command;
+using BusinessLayer.CQRS.WarehouseConnection.Query;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Warehouse.Request;
+using Shared.DTO.WarehouseConnection.Request;
 
 namespace OunoRentApi.Controllers;
 
@@ -16,7 +19,9 @@ public class WarehouseController : ControllerBase
     {
         _mediator = mediator;
     }
-    
+
+    #region Warehouse
+
     [HttpPost]
     public async Task<IActionResult> CreateWarehouse([FromBody] CreateWarehouseRequest request)
     {
@@ -33,6 +38,14 @@ public class WarehouseController : ControllerBase
         return Ok(warehouses);
     }
     
+    [HttpGet("getActive")]
+    public async Task<IActionResult> GetActiveWarehouses()
+    {
+        var warehouses = await _mediator.Send(new GetActiveWarehousesQuery());
+
+        return Ok(warehouses);
+    }
+    
     [HttpGet("{warehouseId:guid}")]
     public async Task<IActionResult> GetWarehouse(Guid warehouseId)
     {
@@ -40,7 +53,6 @@ public class WarehouseController : ControllerBase
 
         return Ok(warehouse);
     }
-
     
     [HttpPut("{warehouseId:guid}")]
     public async Task<IActionResult> UpdateWarehouse([FromBody] UpdateWarehouseRequest request)
@@ -57,4 +69,58 @@ public class WarehouseController : ControllerBase
 
         return Ok(warehouse);
     }
+
+    #endregion
+    
+    #region WarehouseConnection
+
+    [HttpPost("warehouseConnection/")]
+    public async Task<IActionResult> CreateWarehouseConnection([FromBody] CreateWarehouseConnectionRequest request)
+    {
+        var result = await _mediator.Send(new CreateWarehouseConnectionCommand(request));
+        return Ok(result);
+    }
+
+    [HttpGet("warehouseConnection/")]
+    public async Task<IActionResult> GetWarehouseConnections()
+    {
+        var result = await _mediator.Send(new GetWarehouseConnectionsQuery());
+        
+        return Ok(result);
+    }
+    
+    [HttpGet("warehouseConnection/getActive")]    
+    public async Task<IActionResult> GetActiveWarehouseConnections()
+    {
+        var warehouse = await _mediator.Send(new GetActiveWarehouseConnectionsQuery());
+
+        return Ok(warehouse);
+    }
+    
+    [HttpGet("warehouseConnection/{warehouseConnectionId:guid}")]
+    public async Task<IActionResult> GetWarehouseConnection(Guid warehouseConnectionId)
+    {
+        var result = await _mediator.Send(new GetWarehouseConnectionQuery(warehouseConnectionId));
+        
+        return Ok(result);
+    }
+    
+    [HttpPut("warehouseConnection/{warehouseConnectionId:guid}")]
+    public async Task<IActionResult> UpdateWarehouseConnection([FromBody] UpdateWarehouseConnectionRequest request)
+    {
+        var result = await _mediator.Send(new UpdateWarehouseConnectionCommand(request));
+        
+        return Ok(result);
+    }
+
+    [HttpDelete("warehouseConnection/{warehouseConnectionId:guid}")]
+    public async Task<IActionResult> DeleteWarehouseConnection(Guid warehouseConnectionId)
+    {
+        var result = await _mediator.Send(new DeleteWarehouseConnectionCommand(warehouseConnectionId));
+
+        return Ok(result);
+    }
+
+    #endregion
+    
 }

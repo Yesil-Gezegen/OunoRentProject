@@ -33,6 +33,14 @@ public class BrandController : ControllerBase
 
         return Ok(result);
     }
+    
+    [HttpGet("getActive")]
+    public async Task<IActionResult> GetActiveBrands()
+    {
+        var result = await _mediator.Send(new GetActiveBrandsQuery());
+
+        return Ok(result);
+    }
 
     [HttpGet("{brandId:guid}")]
     public async Task<IActionResult> GetBrand(Guid brandId)

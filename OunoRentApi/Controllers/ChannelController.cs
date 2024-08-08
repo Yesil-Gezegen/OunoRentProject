@@ -32,6 +32,14 @@ public class ChannelController : ControllerBase
         return Ok(channels);
     }
     
+    [HttpGet("getActive")]
+    public async Task<IActionResult> GetActiveChannels()
+    {
+        var channels = await _mediator.Send(new GetActiveChannelsQuery());
+        
+        return Ok(channels);
+    }
+    
     [HttpGet("{channelId:guid}")]
     public async Task<IActionResult> GetChannel(Guid channelId)
     {

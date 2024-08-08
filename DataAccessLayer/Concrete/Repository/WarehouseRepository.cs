@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using BusinessLayer.Middlewares;
 using DataAccessLayer.Concrete.Context;
 using EntityLayer.Entities;
@@ -40,19 +41,33 @@ public class WarehouseRepository : IWarehouseRepository
         return _mapper.Map<WarehouseResponse>(warehouse);
     }
 
+ 
+
     #endregion
 
     #region GetWarehouses
 
-    public async Task<List<GetWarehousesResponse>> GetWarehouses()
+    public async Task<List<GetWarehousesResponse>> GetWarehouses(
+        Expression<Func<GetWarehousesResponse, bool>>? predicate = null)
     {
-        var warehouseList = await _applicationDbContext.Warehouses
+        var warehouses = _applicationDbContext.Warehouses
+            .AsNoTracking();
+
+        if (predicate != null)
+        {
+            var warehousePredicate = _mapper.MapExpression<Expression<Func<Warehouse, bool>>>(predicate);
+            warehouses = warehouses.Where(warehousePredicate);
+        }
+        
+        var warehouseList = await warehouses
             .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
             .ToListAsync();
         
-        return _mapper.Map<List<GetWarehousesResponse>>(warehouseList);
-    }
+        var warehouseResponse = _mapper.Map<List<GetWarehousesResponse>>(warehouseList);
 
+        return warehouseResponse;
+    }
+    
     #endregion
 
     #region GetWarehouse
