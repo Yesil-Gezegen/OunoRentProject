@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Shared.DTO.Warehouse.Request;
 using Shared.DTO.Warehouse.Response;
 using Shared.DTO.WarehouseConnection.Request;
@@ -10,7 +11,8 @@ public interface IWarehouseConnectionRepository
     Task<WarehouseConnectionResponse> CreateWarehouseConnection(
         CreateWarehouseConnectionRequest createWarehouseConnectionRequest);
 
-    Task<List<GetWarehouseConnectionsResponse>> GetWarehouseConnections();
+    Task<List<GetWarehouseConnectionsResponse>> GetWarehouseConnections(
+        Expression<Func<GetWarehouseConnectionsResponse, bool>>? predicate = null);
     
     Task<GetWarehouseConnectionResponse> GetWarehouseConnection(Guid warehouseConnectionId);
     
