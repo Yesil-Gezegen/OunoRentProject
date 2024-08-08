@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessLayer", "BusinessLa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{B956FA62-54A1-47AA-83AB-E88FBC78E529}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OunoRentApiTests", "OunoRentApiTests\OunoRentApiTests.csproj", "{D55F1FE1-425A-40F2-BCD5-FF6724F49284}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer.UnitTests", "DataAccessLayer.UnitTests\DataAccessLayer.UnitTests.csproj", "{F7989B59-2B04-4B44-BBE0-06743BB0515C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,9 +44,9 @@ Global
 		{B956FA62-54A1-47AA-83AB-E88FBC78E529}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B956FA62-54A1-47AA-83AB-E88FBC78E529}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B956FA62-54A1-47AA-83AB-E88FBC78E529}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D55F1FE1-425A-40F2-BCD5-FF6724F49284}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D55F1FE1-425A-40F2-BCD5-FF6724F49284}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D55F1FE1-425A-40F2-BCD5-FF6724F49284}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D55F1FE1-425A-40F2-BCD5-FF6724F49284}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7989B59-2B04-4B44-BBE0-06743BB0515C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7989B59-2B04-4B44-BBE0-06743BB0515C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7989B59-2B04-4B44-BBE0-06743BB0515C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7989B59-2B04-4B44-BBE0-06743BB0515C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
