@@ -6,7 +6,7 @@ public class GetFooterItemResponse
 
     public string Label { get; set; }
 
-    public string Column { get; set; }
+    public int Column { get; set; }
 
     public int OrderNumber { get; set; }
 

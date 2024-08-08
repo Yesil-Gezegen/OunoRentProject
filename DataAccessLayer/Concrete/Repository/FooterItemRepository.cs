@@ -26,7 +26,7 @@ public class FooterItemRepository : IFooterItemRepository
 
     public async Task<FooterItemResponse> CreateFooterItem(CreateFooterItemRequest footerItemRequest)
     {
-        await IsExistGeneric(x=> x.Label.Trim() == footerItemRequest.Label.Trim());
+        await IsExistGeneric(x => x.Label.Trim() == footerItemRequest.Label.Trim());
 
         await IsExistOrderNumber(footerItemRequest.OrderNumber);
         
@@ -41,37 +41,23 @@ public class FooterItemRepository : IFooterItemRepository
         _applicationDbContext.FooterItems.Add(footerItem);
         
         await _applicationDbContext.SaveChangesAsync();
-        
+
         return _mapper.Map<FooterItemResponse>(footerItem);
     }
 
-    public async Task<List<GetFooterItemsResponse>> GetFooterItems()
-    {
-        var footerItemList = await _applicationDbContext.FooterItems
-            .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
-            .ToListAsync();
-        
-        return _mapper.Map<List<GetFooterItemsResponse>>(footerItemList);
-    }
+    #endregion
 
-    public async Task<GetFooterItemResponse> GetFooterItem(Guid footerItemId)
-    {
-        var footerItem = await _applicationDbContext.FooterItems
-            .FirstOrDefaultAsync(x=> x.FooterItemId == footerItemId)
-            ?? throw new NotFoundException(FooterItemExceptionMessages.NotFound);
-        
-        return _mapper.Map<GetFooterItemResponse>(footerItem);
-        
-    }
+    #region UpdateFooterItem
 
     public async Task<FooterItemResponse> UpdateFooterItem(UpdateFooterItemRequest updateFooterItemRequest)
     {
         var footerItem = await _applicationDbContext.FooterItems
                              .FirstOrDefaultAsync(x => x.FooterItemId == updateFooterItemRequest.FooterItemId)
                          ?? throw new NotFoundException(FooterItemExceptionMessages.NotFound);
-        
-        await IsExistWhenUpdate(updateFooterItemRequest.FooterItemId, updateFooterItemRequest.OrderNumber, updateFooterItemRequest.Label);
-        
+
+        await IsExistWhenUpdate(updateFooterItemRequest.FooterItemId, updateFooterItemRequest.OrderNumber,
+            updateFooterItemRequest.Label);
+
         footerItem.Label = updateFooterItemRequest.Label.Trim();
         footerItem.Column = updateFooterItemRequest.Column;
         footerItem.OrderNumber = updateFooterItemRequest.OrderNumber;
@@ -79,20 +65,24 @@ public class FooterItemRepository : IFooterItemRepository
         footerItem.IsActive = updateFooterItemRequest.IsActive;
 
         _applicationDbContext.FooterItems.Update(footerItem);
-        
+
         await _applicationDbContext.SaveChangesAsync();
-        
+
         return _mapper.Map<FooterItemResponse>(footerItem);
     }
+
+    #endregion
+
+    #region DeleteFooterItem
 
     public async Task<Guid> DeleteFooterItem(Guid footerItemId)
     {
         var footerItem = await _applicationDbContext.FooterItems
-            .FirstOrDefaultAsync(x => x.FooterItemId == footerItemId)
-            ?? throw new NotFoundException(FooterItemExceptionMessages.NotFound);
-        
+                             .FirstOrDefaultAsync(x => x.FooterItemId == footerItemId)
+                         ?? throw new NotFoundException(FooterItemExceptionMessages.NotFound);
+
         _applicationDbContext.FooterItems.Remove(footerItem);
-        
+
         await _applicationDbContext.SaveChangesAsync();
 
         return footerItem.FooterItemId;
@@ -100,6 +90,32 @@ public class FooterItemRepository : IFooterItemRepository
 
     #endregion
 
+    #region GetFooterItem
+
+    public async Task<GetFooterItemResponse> GetFooterItem(Guid footerItemId)
+    {
+        var footerItem = await _applicationDbContext.FooterItems
+                             .FirstOrDefaultAsync(x => x.FooterItemId == footerItemId)
+                         ?? throw new NotFoundException(FooterItemExceptionMessages.NotFound);
+
+        return _mapper.Map<GetFooterItemResponse>(footerItem);
+    }
+
+    #endregion
+
+    #region GetFooterItems
+
+    public async Task<List<GetFooterItemsResponse>> GetFooterItems()
+    {
+        var footerItemList = await _applicationDbContext.FooterItems
+            .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
+            .ToListAsync();
+
+        return _mapper.Map<List<GetFooterItemsResponse>>(footerItemList);
+    }
+
+    #endregion
+    
     #region IsExist
 
     private async Task IsExistOrderNumber(int orderNumber)
@@ -110,7 +126,7 @@ public class FooterItemRepository : IFooterItemRepository
         if (footerItemOrderNumber)
             throw new ConflictException(FooterItemExceptionMessages.OrderNumberConflict);
     }
-    
+
     private async Task<bool> IsExistGeneric(Expression<Func<FooterItem, bool>> filter)
     {
         var result = await _applicationDbContext.FooterItems.AnyAsync(filter);
@@ -120,15 +136,15 @@ public class FooterItemRepository : IFooterItemRepository
 
         return result;
     }
-    
+
     private async Task IsExistWhenUpdate(Guid footerItemId, int orderNumber, string label)
     {
         var isExistOrderNumber = await _applicationDbContext.FooterItems
             .AnyAsync(x => x.FooterItemId != footerItemId && x.OrderNumber == orderNumber);
-        
+
         var isExistFooterItem = await _applicationDbContext.FooterItems
-            .AnyAsync(x=> x.FooterItemId != footerItemId &&
-                          x.Label.Trim() == label.Trim());
+            .AnyAsync(x => x.FooterItemId != footerItemId &&
+                           x.Label.Trim() == label.Trim());
 
         if (isExistOrderNumber)
         {
@@ -142,5 +158,4 @@ public class FooterItemRepository : IFooterItemRepository
     }
 
     #endregion
- 
 }
