@@ -31,7 +31,7 @@ public class FooterItemController : ControllerBase
         return Ok(result);
     }
     
-    [HttpGet("getactive")]
+    [HttpGet("getActive")]
     public async Task<IActionResult> GetActiveFooterItems()
     {
         var result = await _mediator.Send(new GetActiveFooterItemsQuery());

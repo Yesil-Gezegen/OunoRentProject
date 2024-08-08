@@ -34,7 +34,7 @@ public class BrandController : ControllerBase
         return Ok(result);
     }
     
-    [HttpGet("GetActive")]
+    [HttpGet("getActive")]
     public async Task<IActionResult> GetActiveBrands()
     {
         var result = await _mediator.Send(new GetActiveBrandsQuery());

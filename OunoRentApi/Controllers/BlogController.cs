@@ -38,7 +38,7 @@ public class BlogController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("GetActive")]
+    [HttpGet("getActive")]
     public async Task<IActionResult> GetActiveBlogs()
     {
         var result = await _mediator.Send(new GetActiveBlogsQuery());

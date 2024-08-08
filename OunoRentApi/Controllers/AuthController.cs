@@ -8,7 +8,7 @@ using Shared.DTO.Authentication.Request;
 namespace OunoRentApi.Controllers;
 
 [ApiController]
-[Route("api/auth")]
+[Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -47,7 +47,7 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpGet("validate-token")]
+    [HttpGet("validateToken")]
     public async Task<IActionResult> ValidateToken()
     {
         try
