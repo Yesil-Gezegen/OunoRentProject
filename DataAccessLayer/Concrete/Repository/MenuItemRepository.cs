@@ -14,12 +14,14 @@ namespace DataAccessLayer.Concrete.Repository;
 public class MenuItemRepository : IMenuItemRepository
 {
     private readonly ApplicationDbContext _applicationDbContext;
+    private readonly IImageService _imageService;
     private readonly IMapper _mapper;
 
-    public MenuItemRepository(ApplicationDbContext applicationDbContext, IMapper mapper)
+    public MenuItemRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IImageService imageService)
     {
         _applicationDbContext = applicationDbContext;
         _mapper = mapper;
+        _imageService = imageService;
     }
 
     #region CreateMenuItem
@@ -34,6 +36,7 @@ public class MenuItemRepository : IMenuItemRepository
         {
             Label = createMenuItemRequest.Label.Trim(),
             TargetUrl = createMenuItemRequest.TargetUrl.Trim(),
+            Icon = await _imageService.SaveImageAsync(createMenuItemRequest.Icon),
             OrderNumber = createMenuItemRequest.OrderNumber,
             OnlyToMembers = createMenuItemRequest.OnlyToMembers,
             IsActive = createMenuItemRequest.IsActive,
@@ -57,6 +60,8 @@ public class MenuItemRepository : IMenuItemRepository
         var entity = await _applicationDbContext.MenuItems
                          .FirstOrDefaultAsync(x => x.MenuItemId == menuItemId)
                      ?? throw new NotFoundException(MenuItemExceptionMessages.NotFound);
+
+        await _imageService.DeleteImageAsync(entity.Icon);
 
         _applicationDbContext.MenuItems.Remove(entity);
 
@@ -129,6 +134,12 @@ public class MenuItemRepository : IMenuItemRepository
         menuItem.OrderNumber = updateMenuItemRequest.OrderNumber;
         menuItem.OnlyToMembers = updateMenuItemRequest.OnlyToMembers;
         menuItem.IsActive = updateMenuItemRequest.IsActive;
+
+        if (updateMenuItemRequest.Icon != null)
+        {
+            await _imageService.DeleteImageAsync(menuItem.Icon);
+            menuItem.Icon = await _imageService.SaveImageAsync(updateMenuItemRequest.Icon);
+        }
 
         _applicationDbContext.MenuItems.Update(menuItem);
 

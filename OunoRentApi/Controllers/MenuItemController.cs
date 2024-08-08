@@ -39,7 +39,7 @@ public class MenuItemController : ControllerBase
     }
 
     [HttpPost("")]
-    public async Task<IActionResult> CreateMenuItem(CreateMenuItemRequest createMenuItemRequest)
+    public async Task<IActionResult> CreateMenuItem([FromForm] CreateMenuItemRequest createMenuItemRequest)
     {
         var result = await _mediator.Send(new CreateMenuItemCommand(createMenuItemRequest));
         return Ok(result);

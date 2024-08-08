@@ -5,9 +5,12 @@ using BusinessLayer.Middlewares;
 using DataAccessLayer.Concrete.Context;
 using DataAccessLayer.Concrete.Repository;
 using EntityLayer.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Shared.DTO.MenuItem.Request;
+using Shared.Interface;
 
 namespace DataAccessLayer.UnitTests;
 
@@ -26,6 +29,15 @@ public class MenuItemRepositoryTests
         // Registering MenuItemRepository and IMapper
         services.AddScoped<MenuItemRepository>();
         services.AddAutoMapper(typeof(MapperProfile));
+
+        // Mocking IImageService
+        var mockImageService = new Mock<IImageService>();
+        mockImageService.Setup(s => s.SaveImageAsync(It.IsAny<IFormFile>()))
+            .ReturnsAsync("http://test.com/image.jpg");
+        mockImageService.Setup(s => s.DeleteImageAsync(It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
+
+        services.AddSingleton(mockImageService.Object);
 
         _serviceProvider = services.BuildServiceProvider();
     }
@@ -48,7 +60,8 @@ public class MenuItemRepositoryTests
                     TargetUrl: f.Internet.Url(),
                     OrderNumber: f.Random.Int(1, 100),
                     OnlyToMembers: f.Random.Bool(),
-                    IsActive: f.Random.Bool()
+                    IsActive: f.Random.Bool(),
+                    Icon: new Mock<IFormFile>().Object
                 ));
 
             var request = fakeMenuItemRequest.Generate();
@@ -65,6 +78,7 @@ public class MenuItemRepositoryTests
             Assert.Equal(request.OrderNumber, menuItem.OrderNumber);
             Assert.Equal(request.OnlyToMembers, menuItem.OnlyToMembers);
             Assert.Equal(request.IsActive, menuItem.IsActive);
+            Assert.Equal("http://test.com/image.jpg", menuItem.Icon);
         }
     }
 
@@ -85,7 +99,8 @@ public class MenuItemRepositoryTests
                     TargetUrl = f.Internet.Url(),
                     OrderNumber = f.Random.Int(1, 100),
                     OnlyToMembers = f.Random.Bool(),
-                    IsActive = f.Random.Bool()
+                    IsActive = f.Random.Bool(),
+                    Icon = f.Image.PicsumUrl()
                 });
 
             var menuItem = fakeMenuItem.Generate();
@@ -100,7 +115,8 @@ public class MenuItemRepositoryTests
                     TargetUrl: f.Internet.Url(),
                     OrderNumber: f.Random.Int(1, 100),
                     OnlyToMembers: f.Random.Bool(),
-                    IsActive: f.Random.Bool()
+                    IsActive: f.Random.Bool(),
+                    Icon: new Mock<IFormFile>().Object
                 ));
 
             var request = fakeMenuItemRequest.Generate();
@@ -126,7 +142,8 @@ public class MenuItemRepositoryTests
                     TargetUrl = f.Internet.Url(),
                     OrderNumber = 1, // Specific order number
                     OnlyToMembers = f.Random.Bool(),
-                    IsActive = f.Random.Bool()
+                    IsActive = f.Random.Bool(),
+                    Icon = f.Image.PicsumUrl()
                 });
 
             var menuItem = fakeMenuItem.Generate();
@@ -141,7 +158,8 @@ public class MenuItemRepositoryTests
                     TargetUrl: f.Internet.Url(),
                     OrderNumber: 1, // Same order number
                     OnlyToMembers: f.Random.Bool(),
-                    IsActive: f.Random.Bool()
+                    IsActive: f.Random.Bool(),
+                    Icon: new Mock<IFormFile>().Object
                 ));
 
             var request = fakeMenuItemRequest.Generate();
@@ -171,7 +189,8 @@ public class MenuItemRepositoryTests
                     TargetUrl = f.Internet.Url(),
                     OrderNumber = f.Random.Int(1, 100),
                     OnlyToMembers = f.Random.Bool(),
-                    IsActive = f.Random.Bool()
+                    IsActive = f.Random.Bool(),
+                    Icon = f.Image.PicsumUrl()
                 });
 
             var menuItem = fakeMenuItem.Generate();
@@ -187,7 +206,8 @@ public class MenuItemRepositoryTests
                     TargetUrl: f.Internet.Url(),
                     OrderNumber: f.Random.Int(1, 100),
                     OnlyToMembers: f.Random.Bool(),
-                    IsActive: f.Random.Bool()
+                    IsActive: f.Random.Bool(),
+                    Icon: new Mock<IFormFile>().Object
                 ));
 
             var request = fakeUpdateMenuItemRequest.Generate();
@@ -205,6 +225,7 @@ public class MenuItemRepositoryTests
             Assert.Equal(request.OrderNumber, updatedMenuItem.OrderNumber);
             Assert.Equal(request.OnlyToMembers, updatedMenuItem.OnlyToMembers);
             Assert.Equal(request.IsActive, updatedMenuItem.IsActive);
+            Assert.Equal("http://test.com/image.jpg", updatedMenuItem.Icon);
         }
     }
 
@@ -225,7 +246,8 @@ public class MenuItemRepositoryTests
                     TargetUrl = f.Internet.Url(),
                     OrderNumber = f.Random.Int(1, 100),
                     OnlyToMembers = f.Random.Bool(),
-                    IsActive = f.Random.Bool()
+                    IsActive = f.Random.Bool(),
+                    Icon = f.Image.PicsumUrl()
                 });
 
             var fakeMenuItem2 = new Faker<MenuItem>()
@@ -236,7 +258,8 @@ public class MenuItemRepositoryTests
                     TargetUrl = f.Internet.Url(),
                     OrderNumber = f.Random.Int(1, 100),
                     OnlyToMembers = f.Random.Bool(),
-                    IsActive = f.Random.Bool()
+                    IsActive = f.Random.Bool(),
+                    Icon = f.Image.PicsumUrl()
                 });
 
             var menuItem1 = fakeMenuItem1.Generate();
@@ -253,7 +276,8 @@ public class MenuItemRepositoryTests
                     TargetUrl: f.Internet.Url(),
                     OrderNumber: f.Random.Int(1, 100),
                     OnlyToMembers: f.Random.Bool(),
-                    IsActive: f.Random.Bool()
+                    IsActive: f.Random.Bool(),
+                    Icon: new Mock<IFormFile>().Object
                 ));
 
             var request = fakeUpdateMenuItemRequest.Generate();
@@ -279,7 +303,8 @@ public class MenuItemRepositoryTests
                     TargetUrl = f.Internet.Url(),
                     OrderNumber = 1, // Specific order number
                     OnlyToMembers = f.Random.Bool(),
-                    IsActive = f.Random.Bool()
+                    IsActive = f.Random.Bool(),
+                    Icon = f.Image.PicsumUrl()
                 });
 
             var fakeMenuItem2 = new Faker<MenuItem>()
@@ -290,7 +315,8 @@ public class MenuItemRepositoryTests
                     TargetUrl = f.Internet.Url(),
                     OrderNumber = 2,
                     OnlyToMembers = f.Random.Bool(),
-                    IsActive = f.Random.Bool()
+                    IsActive = f.Random.Bool(),
+                    Icon = f.Image.PicsumUrl()
                 });
 
             var menuItem1 = fakeMenuItem1.Generate();
@@ -307,7 +333,8 @@ public class MenuItemRepositoryTests
                     TargetUrl: f.Internet.Url(),
                     OrderNumber: 1, // Same order number as menuItem1
                     OnlyToMembers: f.Random.Bool(),
-                    IsActive: f.Random.Bool()
+                    IsActive: f.Random.Bool(),
+                    Icon: new Mock<IFormFile>().Object
                 ));
 
             var request = fakeUpdateMenuItemRequest.Generate();
@@ -337,7 +364,8 @@ public class MenuItemRepositoryTests
                     TargetUrl = f.Internet.Url(),
                     OrderNumber = f.Random.Int(1, 100),
                     OnlyToMembers = f.Random.Bool(),
-                    IsActive = f.Random.Bool()
+                    IsActive = f.Random.Bool(),
+                    Icon = f.Image.PicsumUrl()
                 });
 
             var menuItem = fakeMenuItem.Generate();
@@ -384,7 +412,8 @@ public class MenuItemRepositoryTests
                     TargetUrl = f.Internet.Url(),
                     OrderNumber = f.Random.Int(1, 100),
                     OnlyToMembers = f.Random.Bool(),
-                    IsActive = f.Random.Bool()
+                    IsActive = f.Random.Bool(),
+                    Icon = f.Image.PicsumUrl()
                 });
 
             var menuItem = fakeMenuItem.Generate();
@@ -401,9 +430,10 @@ public class MenuItemRepositoryTests
             Assert.Equal(menuItem.OrderNumber, result.OrderNumber);
             Assert.Equal(menuItem.OnlyToMembers, result.OnlyToMembers);
             Assert.Equal(menuItem.IsActive, result.IsActive);
+            Assert.Equal(menuItem.Icon, result.Icon);
         }
     }
-    
+
     [Fact]
     public async Task GetMenuItem_ThrowsNotFoundException_WhenMenuItemDoesNotExist()
     {
@@ -415,7 +445,7 @@ public class MenuItemRepositoryTests
             await Assert.ThrowsAsync<NotFoundException>(() => repo.GetMenuItemAsync(Guid.NewGuid()));
         }
     }
-    
+
     #endregion
 
     #region GetMenuItems
@@ -437,7 +467,8 @@ public class MenuItemRepositoryTests
                     TargetUrl = f.Internet.Url(),
                     OrderNumber = f.Random.Int(1, 100),
                     OnlyToMembers = f.Random.Bool(),
-                    IsActive = f.Random.Bool()
+                    IsActive = f.Random.Bool(),
+                    Icon = f.Image.PicsumUrl()
                 });
 
             var fakeMenuItem2 = new Faker<MenuItem>()
@@ -448,7 +479,8 @@ public class MenuItemRepositoryTests
                     TargetUrl = f.Internet.Url(),
                     OrderNumber = f.Random.Int(1, 100),
                     OnlyToMembers = f.Random.Bool(),
-                    IsActive = f.Random.Bool()
+                    IsActive = f.Random.Bool(),
+                    Icon = f.Image.PicsumUrl()
                 });
 
             var menuItem1 = fakeMenuItem1.Generate();
@@ -484,7 +516,8 @@ public class MenuItemRepositoryTests
                     TargetUrl = f.Internet.Url(),
                     OrderNumber = f.Random.Int(1, 100),
                     OnlyToMembers = f.Random.Bool(),
-                    IsActive = true
+                    IsActive = true,
+                    Icon = f.Image.PicsumUrl()
                 });
 
             var fakeMenuItem2 = new Faker<MenuItem>()
@@ -495,7 +528,8 @@ public class MenuItemRepositoryTests
                     TargetUrl = f.Internet.Url(),
                     OrderNumber = f.Random.Int(1, 100),
                     OnlyToMembers = f.Random.Bool(),
-                    IsActive = false
+                    IsActive = false,
+                    Icon = f.Image.PicsumUrl()
                 });
 
             var menuItem1 = fakeMenuItem1.Generate();
@@ -516,6 +550,6 @@ public class MenuItemRepositoryTests
             }
         }
     }
-    #endregion
 
+    #endregion
 }
