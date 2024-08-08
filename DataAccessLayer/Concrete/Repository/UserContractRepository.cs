@@ -23,7 +23,7 @@ public class UserContractRepository : IUserContractRepository
 
     #region CreateUserContract
 
-    public async Task<UserContractResponse> CraateUserContractAsync(CreateUserContractRequest createUserContractRequest)
+    public async Task<UserContractResponse> CreateUserContractAsync(CreateUserContractRequest createUserContractRequest)
     {
         await HasConflict(createUserContractRequest);
 

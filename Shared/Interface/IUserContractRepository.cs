@@ -6,7 +6,7 @@ namespace Shared.Interface;
 
 public interface IUserContractRepository
 {
-    Task<UserContractResponse> CraateUserContractAsync(CreateUserContractRequest createUserContractRequest);
+    Task<UserContractResponse> CreateUserContractAsync(CreateUserContractRequest createUserContractRequest);
     Task<GetUserContractResponse> GetUserContractAsync(Guid userContractId);
     Task<List<GetUserContractsResponse>> GetUserContractsAsync(
         Expression<Func<GetUserContractResponse, bool>>? predicate = null);

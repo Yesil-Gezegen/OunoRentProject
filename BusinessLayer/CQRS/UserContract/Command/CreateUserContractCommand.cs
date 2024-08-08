@@ -20,7 +20,7 @@ public class  CreateUserContractCommandHandler : IRequestHandler<CreateUserContr
     public async Task<UserContractResponse> Handle(CreateUserContractCommand request, CancellationToken cancellationToken)
     {
         var userContractResponse =
-            await _userContractRepository.CraateUserContractAsync(request.CreateUserContractRequest);
+            await _userContractRepository.CreateUserContractAsync(request.CreateUserContractRequest);
         return userContractResponse;
     }
 }
