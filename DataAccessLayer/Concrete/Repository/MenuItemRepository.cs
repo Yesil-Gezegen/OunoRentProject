@@ -55,7 +55,6 @@ public class MenuItemRepository : IMenuItemRepository
     public async Task<Guid> DeleteMenuItemAsync(Guid menuItemId)
     {
         var entity = await _applicationDbContext.MenuItems
-                         .AsNoTracking()
                          .FirstOrDefaultAsync(x => x.MenuItemId == menuItemId)
                      ?? throw new NotFoundException(MenuItemExceptionMessages.NotFound);
 
