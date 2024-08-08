@@ -49,8 +49,9 @@ public class ContactFormRepository : IContactFormRepository
     public async Task<GetContactFormResponse> GetContactForm(Guid contactFormId)
     {
         var contactForm = await _applicationDbContext.ContactForms
-            .FirstOrDefaultAsync(x => x.ContactFormId == contactFormId);
-        
+                              .FirstOrDefaultAsync(x => x.ContactFormId == contactFormId)
+                          ?? throw new NotFoundException(ContactFormExceptionMessages.NotFound);
+
         return _mapper.Map<GetContactFormResponse>(contactForm);
     }
 
