@@ -532,3 +532,4 @@ Temporary Items
 .idea
 .vscode
 /DataAccessLayer/Migrations/LocalMigrations
+/OunoRentApi/appsettings.Development.json
