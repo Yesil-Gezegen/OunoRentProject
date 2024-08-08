@@ -58,7 +58,8 @@ public class BlogRepositoryTests
                     SubCategoryId = Guid.NewGuid(),
                     Name = f.Commerce.Department(),
                     Description = f.Lorem.Paragraphs(),
-                    Icon = f.Image.PicsumUrl()
+                    Icon = f.Image.PicsumUrl(),
+                    IsActive = f.Random.Bool()
                 });
 
             var subCategory = fakeSubCategory.Generate();
@@ -76,7 +77,8 @@ public class BlogRepositoryTests
                     Title: f.Lorem.Sentence(),
                     Tags: f.Lorem.Words(5).ToString(),
                     LargeImage: new Mock<IFormFile>().Object,
-                    SmallImage: new Mock<IFormFile>().Object
+                    SmallImage: new Mock<IFormFile>().Object,
+                    IsActive: f.Random.Bool()
                 ));
 
             var request = fakeBlogRequest.Generate();
@@ -111,7 +113,8 @@ public class BlogRepositoryTests
                     SubCategoryId = Guid.NewGuid(),
                     Name = f.Commerce.Department(),
                     Description = f.Lorem.Paragraphs(),
-                    Icon = f.Image.PicsumUrl()
+                    Icon = f.Image.PicsumUrl(),
+                    IsActive = f.Random.Bool()
                 });
 
             var subCategory = fakeSubCategory.Generate();
@@ -130,7 +133,8 @@ public class BlogRepositoryTests
                     Title = f.Lorem.Sentence(),
                     Tags = f.Lorem.Words(5).ToString(),
                     LargeImageUrl = "http://test.com/image.jpg",
-                    SmallImageUrl = "http://test.com/image.jpg"
+                    SmallImageUrl = "http://test.com/image.jpg",
+                    IsActive = f.Random.Bool()
                 });
 
             var blog = fakeBlog.Generate();
@@ -148,7 +152,8 @@ public class BlogRepositoryTests
                     Title: f.Lorem.Sentence(),
                     Tags: f.Lorem.Words(5).ToString(),
                     LargeImage: new Mock<IFormFile>().Object,
-                    SmallImage: new Mock<IFormFile>().Object
+                    SmallImage: new Mock<IFormFile>().Object,
+                    IsActive: f.Random.Bool()
                 ));
 
             var request = fakeBlogRequest.Generate();
@@ -175,7 +180,8 @@ public class BlogRepositoryTests
                     Title: f.Lorem.Sentence(),
                     Tags: f.Lorem.Words(5).ToString(),
                     LargeImage: new Mock<IFormFile>().Object,
-                    SmallImage: new Mock<IFormFile>().Object
+                    SmallImage: new Mock<IFormFile>().Object,
+                    IsActive: f.Random.Bool()
                 ));
 
             var request = fakeBlogRequest.Generate();
@@ -203,7 +209,8 @@ public class BlogRepositoryTests
                     SubCategoryId = Guid.NewGuid(),
                     Name = f.Commerce.Department(),
                     Description = f.Lorem.Paragraphs(),
-                    Icon = f.Image.PicsumUrl()
+                    Icon = f.Image.PicsumUrl(),
+                    IsActive = f.Random.Bool()
                 });
 
             var subCategory = fakeSubCategory.Generate();
@@ -222,7 +229,8 @@ public class BlogRepositoryTests
                     Title = f.Lorem.Sentence(),
                     Tags = f.Lorem.Words(5).ToString(),
                     LargeImageUrl = "http://test.com/image.jpg",
-                    SmallImageUrl = "http://test.com/image.jpg"
+                    SmallImageUrl = "http://test.com/image.jpg",
+                    IsActive = f.Random.Bool()
                 });
 
             var blog = fakeBlog.Generate();
@@ -280,7 +288,8 @@ public class BlogRepositoryTests
                     SubCategoryId = Guid.NewGuid(),
                     Name = f.Commerce.Department(),
                     Description = f.Lorem.Paragraphs(),
-                    Icon = f.Image.PicsumUrl()
+                    Icon = f.Image.PicsumUrl(),
+                    IsActive = f.Random.Bool()
                 });
 
             var subCategory = fakeSubCategory.Generate();
@@ -299,7 +308,8 @@ public class BlogRepositoryTests
                     Title = f.Lorem.Sentence(),
                     Tags = f.Lorem.Words(5).ToString(),
                     LargeImageUrl = "http://test.com/image.jpg",
-                    SmallImageUrl = "http://test.com/image.jpg"
+                    SmallImageUrl = "http://test.com/image.jpg",
+                    IsActive = f.Random.Bool()
                 });
 
             var fakeBlog2 = new Faker<Blog>()
@@ -313,7 +323,8 @@ public class BlogRepositoryTests
                     Title = f.Lorem.Sentence(),
                     Tags = f.Lorem.Words(5).ToString(),
                     LargeImageUrl = "http://test.com/image.jpg",
-                    SmallImageUrl = "http://test.com/image.jpg"
+                    SmallImageUrl = "http://test.com/image.jpg",
+                    IsActive = f.Random.Bool()
                 });
 
             var blog1 = fakeBlog1.Generate();
@@ -364,7 +375,8 @@ public class BlogRepositoryTests
                     Title = f.Lorem.Sentence(),
                     Tags = f.Lorem.Words(5).ToString(),
                     LargeImageUrl = "http://test.com/image.jpg",
-                    SmallImageUrl = "http://test.com/image.jpg"
+                    SmallImageUrl = "http://test.com/image.jpg",
+                    IsActive = f.Random.Bool()
                 });
 
             var blogEntity = fakeBlog.Generate();
@@ -418,7 +430,8 @@ public class BlogRepositoryTests
                     Title = f.Lorem.Sentence(),
                     Tags = f.Lorem.Words(5).ToString(),
                     LargeImageUrl = "http://test.com/image.jpg",
-                    SmallImageUrl = "http://test.com/image.jpg"
+                    SmallImageUrl = "http://test.com/image.jpg",
+                    IsActive = f.Random.Bool()
                 });
 
             var blog = fakeBlog.Generate();
@@ -468,7 +481,8 @@ public class BlogRepositoryTests
                     Title = f.Lorem.Sentence(),
                     Tags = f.Lorem.Words(5).ToString(),
                     LargeImageUrl = "http://test.com/image.jpg",
-                    SmallImageUrl = "http://test.com/image.jpg"
+                    SmallImageUrl = "http://test.com/image.jpg",
+                    IsActive = f.Random.Bool()
                 });
 
             var blog = fakeBlog.Generate();
@@ -525,7 +539,8 @@ public class BlogRepositoryTests
                     Title = f.Lorem.Sentence(),
                     Tags = f.Lorem.Words(5).ToString(),
                     LargeImageUrl = "http://test.com/image.jpg",
-                    SmallImageUrl = "http://test.com/image.jpg"
+                    SmallImageUrl = "http://test.com/image.jpg",
+                    IsActive = f.Random.Bool()
                 });
 
             var fakeBlog2 = new Faker<Blog>()
@@ -539,7 +554,8 @@ public class BlogRepositoryTests
                     Title = f.Lorem.Sentence(),
                     Tags = f.Lorem.Words(5).ToString(),
                     LargeImageUrl = "http://test.com/image.jpg",
-                    SmallImageUrl = "http://test.com/image.jpg"
+                    SmallImageUrl = "http://test.com/image.jpg",
+                    IsActive = f.Random.Bool()
                 });
 
             var blog1 = fakeBlog1.Generate();

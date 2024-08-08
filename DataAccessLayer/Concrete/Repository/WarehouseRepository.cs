@@ -87,7 +87,7 @@ public class WarehouseRepository : IWarehouseRepository
 
     public async Task<WarehouseResponse> UpdateWarehouse(UpdateWarehouseRequest updateWarehouseRequest)
     {
-        await IsExistGeneric(x=> x.WarehouseId == updateWarehouseRequest.WarehouseId &&
+        await IsExistGeneric(x=> x.WarehouseId != updateWarehouseRequest.WarehouseId &&
                                  x.Name.Trim() == updateWarehouseRequest.Name.Trim());
         
         var warehouse = await _applicationDbContext.Warehouses
