@@ -134,9 +134,12 @@ public class BlogRepository : IBlogRepository
 
         await IsExistOrderNumberWhenUpdate(updateBlogRequest.BlogId, updateBlogRequest.OrderNumber);
         
+        var sanitizer = new HtmlSanitizer();
+        
         blog.Title = updateBlogRequest.Title.Trim();
         blog.Tags = updateBlogRequest.Tags.Trim();
         blog.Slug = updateBlogRequest.Slug.Trim();
+        blog.Body = sanitizer.Sanitize(updateBlogRequest.Body);
         blog.OrderNumber = updateBlogRequest.OrderNumber;
         blog.Date = updateBlogRequest.Date;
         blog.SubCategoryId = updateBlogRequest.SubCategoryId;

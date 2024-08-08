@@ -13,6 +13,7 @@ public sealed record UpdateBlogRequest(
     Guid BlogId,
     Guid SubCategoryId,
     string Title,
+    string Body,
     string Tags,
     string Slug,
     int OrderNumber,
