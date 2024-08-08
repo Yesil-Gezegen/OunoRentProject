@@ -11,4 +11,6 @@ public class GetSubCategoriesResponse
     public string Name { get; set; }    
     
     public int OrderNumber { get; set; }
+    
+    public bool IsActive { get; set; }
 }
