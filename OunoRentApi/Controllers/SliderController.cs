@@ -7,7 +7,6 @@ using Shared.DTO.Slider.Request;
 
 namespace OunoRentApi.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class SliderController : ControllerBase
