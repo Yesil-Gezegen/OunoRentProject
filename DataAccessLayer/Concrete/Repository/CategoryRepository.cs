@@ -6,6 +6,7 @@ using EntityLayer.Entities;
 using Shared.DTO.Category.Request;
 using BusinessLayer.Middlewares;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using DataAccessLayer.Concrete.Context;
 
 namespace DataAccessLayer.Concrete.Repository;
@@ -33,7 +34,7 @@ public class CategoryRepository : ICategoryRepository
 
         if (predicate != null)
         {
-            var categoriesPredicate = _mapper.Map<Expression<Func<Category, bool>>>(predicate);
+            var categoriesPredicate = _mapper.MapExpression<Expression<Func<Category, bool>>>(predicate);
             categories = categories.Where(categoriesPredicate);
         }
 
@@ -45,6 +46,7 @@ public class CategoryRepository : ICategoryRepository
                 CategoryId = x.CategoryId,
                 Name = x.Name,
                 OrderNumber = x.OrderNumber,
+                IsActive = x.IsActive,
                 SubCategories = x.SubCategories.Select(y => new GetCategoriesResponse.SubCategory
                 {
                     SubCategoryId = y.SubCategoryId,

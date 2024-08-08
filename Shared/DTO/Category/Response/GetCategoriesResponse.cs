@@ -10,6 +10,8 @@ public class GetCategoriesResponse
 
     public List<SubCategory> SubCategories { get; set; }
     
+    public Boolean IsActive { get; set; }
+    
     public class SubCategory
     {
         public Guid SubCategoryId { get; set; }
