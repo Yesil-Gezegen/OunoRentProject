@@ -98,7 +98,7 @@ namespace DataAccessLayer.UnitTests
                 var fakeContractRequest = new Faker<CreateContractRequest>()
                     .CustomInstantiator(f => new CreateContractRequest
                     (
-                        Name: f.Company.CompanyName(),
+                        Name: contract.Name,
                         Body: f.Lorem.Paragraphs(),
                         Type: f.Random.Int(1, 2),
                         RequiresAt: f.Lorem.Sentence(),
@@ -232,7 +232,5 @@ namespace DataAccessLayer.UnitTests
         }
 
         #endregion
-        
-        //TODO Sözleşmelerde ad farklı olursa yeni ekleme yapacak aynıysa versiyon güncelleme yapacak testleri gir
     }
 }
