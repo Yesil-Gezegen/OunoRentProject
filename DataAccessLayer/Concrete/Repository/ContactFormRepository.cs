@@ -20,6 +20,9 @@ public class ContactFormRepository : IContactFormRepository
         _mapper = mapper;
     }
 
+
+    #region CreateContactForm
+
     public async Task<ContactFormResponse> CreateContactForm(CreateContactFormRequest createContactFormRequest)
     {
         var contactForm = new ContactForm();
@@ -39,12 +42,20 @@ public class ContactFormRepository : IContactFormRepository
 
     }
 
+    #endregion
+
+    #region GetContactForms
+
     public async Task<List<GetContactFormsResponse>> GetContactForms()
     {
         var contactFormList = await _applicationDbContext.ContactForms.ToListAsync();
         
         return _mapper.Map<List<GetContactFormsResponse>>(contactFormList);
     }
+
+    #endregion
+
+    #region GetContactForm
 
     public async Task<GetContactFormResponse> GetContactForm(Guid contactFormId)
     {
@@ -53,6 +64,10 @@ public class ContactFormRepository : IContactFormRepository
         
         return _mapper.Map<GetContactFormResponse>(contactForm);
     }
+
+    #endregion
+
+    #region DeleteContactForm
 
     public async Task<Guid> DeleteContactForm(Guid contactFormId)
     {
@@ -66,4 +81,6 @@ public class ContactFormRepository : IContactFormRepository
         
         return contactForm.ContactFormId;
     }
+
+    #endregion
 }

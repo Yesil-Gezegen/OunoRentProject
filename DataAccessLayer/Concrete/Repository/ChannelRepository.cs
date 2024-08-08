@@ -17,12 +17,16 @@ public class ChannelRepository : IChannelRepository
     private readonly IMapper _mapper;
     private IImageService _imageService;
 
+
+   
     public ChannelRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IImageService imageService)
     {
         _applicationDbContext = applicationDbContext;
         _mapper = mapper;
         _imageService = imageService;
     }
+
+    #region CreateChannel
 
     public async Task<ChannelResponse> CreateChannel(CreateChannelRequest createChannelRequest)
     {
@@ -38,6 +42,10 @@ public class ChannelRepository : IChannelRepository
         
         return _mapper.Map<ChannelResponse>(channel);
     }
+
+    #endregion
+
+    #region GetChannels
 
     public async Task<List<GetChannelsResponse>> GetChannels(Expression<Func<GetChannelsResponse, bool>>? predicate = null)
     {
@@ -58,7 +66,11 @@ public class ChannelRepository : IChannelRepository
 
         return channelResponse;
     }
-    
+
+    #endregion
+
+    #region GetChannel
+
     public async Task<GetChannelResponse> GetChannel(Guid channelId)
     {
         var channel = await _applicationDbContext.Channels
@@ -67,6 +79,10 @@ public class ChannelRepository : IChannelRepository
         
         return _mapper.Map<GetChannelResponse>(channel);
     }
+
+    #endregion
+
+    #region UpdateChannel
 
     public async Task<ChannelResponse> UpdateChannel(UpdateChannelRequest updateChannelRequest)
     {
@@ -88,6 +104,10 @@ public class ChannelRepository : IChannelRepository
         return _mapper.Map<ChannelResponse>(channel);
     }
 
+    #endregion
+
+    #region DeleteChannel
+
     public async Task<Guid> DeleteChannel(Guid channelId)
     {
         var channel = await _applicationDbContext.Channels
@@ -100,4 +120,8 @@ public class ChannelRepository : IChannelRepository
         
         return channelId;
     }
+
+    #endregion
+
+   
 }
