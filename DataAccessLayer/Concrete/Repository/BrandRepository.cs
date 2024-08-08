@@ -54,7 +54,8 @@ public class BrandRepository : IBrandRepository
     public async Task<GetBrandResponse> GetBrand(Guid brandId)
     {
         var brand = await _applicationDbContext.Brands
-            .FirstOrDefaultAsync(x => x.BrandId == brandId);
+                        .FirstOrDefaultAsync(x => x.BrandId == brandId) ??
+                    throw new NotFoundException(BrandExceptionMessages.NotFound);
 
         var brandResponse = _mapper.Map<GetBrandResponse>(brand);
 
