@@ -2,7 +2,7 @@ namespace Shared.DTO.Authentication.Response;
 
 public class UserDetailsResponse
 {
-    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
     public string? Name { get; set; }
 
     public string? Surname { get; set; }
