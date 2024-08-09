@@ -42,4 +42,5 @@ public interface ICategoryRepository
     /// <returns>Silinen kategorinin ID'si.</returns>
     /// <exception cref="KeyNotFoundException">Kategori bulunamadığında fırlatılır.</exception>
     Task<Guid> DeleteCategory(Guid categoryId);
+    Task<byte[]> ExportCategoriesToExcel(Expression<Func<GetCategoriesResponse, bool>>? predicate = null);
 }

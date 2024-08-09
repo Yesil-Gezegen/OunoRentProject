@@ -8,6 +8,7 @@ using BusinessLayer.Middlewares;
 using AutoMapper;
 using AutoMapper.Extensions.ExpressionMapping;
 using DataAccessLayer.Concrete.Context;
+using OfficeOpenXml;
 
 namespace DataAccessLayer.Concrete.Repository;
 
@@ -236,4 +237,75 @@ public class CategoryRepository : ICategoryRepository
     }
 
     #endregion
+    
+     public async Task<byte[]> ExportCategoriesToExcel(Expression<Func<GetCategoriesResponse, bool>>? predicate = null)
+    {
+        var categories = _applicationDbContext.Categories
+        .AsNoTracking();
+
+    if (predicate != null)
+    {
+        var categoriesPredicate = _mapper.Map<Expression<Func<Category, bool>>>(predicate);
+        categories = categories.Where(categoriesPredicate);
+    }
+
+    var categoriesList = await categories
+        .Include(x => x.SubCategories)
+        .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
+        .Select(x => new GetCategoriesResponse
+        {
+            CategoryId = x.CategoryId,
+            Name = x.Name,
+            OrderNumber = x.OrderNumber,
+            SubCategories = x.SubCategories.Select(y => new GetCategoriesResponse.SubCategory
+            {
+                SubCategoryId = y.SubCategoryId,
+                Name = y.Name,
+                Description = y.Description,
+                Icon = y.Icon,
+                OrderNumber = y.OrderNumber,
+                IsActive = y.IsActive
+            }).ToList()
+        }).ToListAsync();
+
+    using (var package = new ExcelPackage())
+    {
+        var worksheet = package.Workbook.Worksheets.Add("Categories");
+
+        worksheet.Cells[1, 1].Value = "CategoryId";
+        worksheet.Cells[1, 2].Value = "Name";
+        worksheet.Cells[1, 3].Value = "OrderNumber";
+        worksheet.Cells[1, 4].Value = "SubCategoryId";
+        worksheet.Cells[1, 5].Value = "SubCategory Name";
+        worksheet.Cells[1, 6].Value = "Description";
+        worksheet.Cells[1, 7].Value = "Icon";
+        worksheet.Cells[1, 8].Value = "SubCategory OrderNumber";
+        worksheet.Cells[1, 9].Value = "IsActive";
+
+        worksheet.Row(1).Style.Font.Bold = true;
+
+        int row = 2;
+        foreach (var category in categoriesList)
+        {
+            foreach (var subCategory in category.SubCategories)
+            {
+                worksheet.Cells[row, 1].Value = category.CategoryId;
+                worksheet.Cells[row, 2].Value = category.Name;
+                worksheet.Cells[row, 3].Value = category.OrderNumber;
+                worksheet.Cells[row, 4].Value = subCategory.SubCategoryId;
+                worksheet.Cells[row, 5].Value = subCategory.Name;
+                worksheet.Cells[row, 6].Value = subCategory.Description;
+                worksheet.Cells[row, 7].Value = subCategory.Icon;
+                worksheet.Cells[row, 8].Value = subCategory.OrderNumber;
+                worksheet.Cells[row, 9].Value = subCategory.IsActive;
+
+                row++;
+            }
+        }
+
+        worksheet.Cells.AutoFitColumns();
+
+        return await Task.FromResult(package.GetAsByteArray());
+    }
+    }
 }

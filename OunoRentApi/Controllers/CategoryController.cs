@@ -62,7 +62,18 @@ public class CategoryController : ControllerBase
         var category = await _mediator.Send(new DeleteCategoryCommand(categoryId));
         return Ok(category);
     }
+    
+    [HttpGet]
+    [Route("exportCategories")]
+    public async Task<IActionResult> ExportCategories()
+    {
+        var excelData = await _mediator.Send(new ExportCategoriesToExcelCommand());
 
+        return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Categories.xlsx");
+    }
+
+    #region SubCategory
+    
     [HttpPost("{categoryId:guid}/subcategory")]
     public async Task<IActionResult> CreateSubCategory(Guid categoryId,
         [FromForm] CreateSubCategoryRequest createSubCategoryRequest)
@@ -115,4 +126,7 @@ public class CategoryController : ControllerBase
 
         return Ok(category);
     }
+
+    #endregion
+  
 }
