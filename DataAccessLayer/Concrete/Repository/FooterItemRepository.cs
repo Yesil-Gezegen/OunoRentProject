@@ -5,6 +5,8 @@ using BusinessLayer.Middlewares;
 using DataAccessLayer.Concrete.Context;
 using EntityLayer.Entities;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
+using Shared.DTO.Channel.Response;
 using Shared.DTO.FooterItem.Request;
 using Shared.DTO.FooterItem.Response;
 using Shared.Interface;
@@ -145,7 +147,7 @@ public class FooterItemRepository : IFooterItemRepository
         var result = await _applicationDbContext.FooterItems.AnyAsync(filter);
 
         if (result)
-            throw new ConflictException(BlogExceptionMessages.Conflict);
+            throw new ConflictException(FooterItemExceptionMessages.Conflict);
 
         return result;
     }
@@ -169,6 +171,46 @@ public class FooterItemRepository : IFooterItemRepository
             throw new ConflictException(FooterItemExceptionMessages.Conflict);
         }
     }
+
+    #endregion
+
+    #region ImportFooterItemsFromExcel
+
+    public async Task<List<GetFooterItemsResponse>> ImportFooterItemsFromExcel(Stream fileStream)
+    {
+        using (var package = new ExcelPackage(fileStream))
+        {
+            var worksheet = package.Workbook.Worksheets[0]; // İlk sayfayı seçiyoruz
+            var rowCount = worksheet.Dimension.Rows;
+
+            var footerItems = new List<FooterItem>(); // Verileri kaydetmek için bir liste
+
+            for (int row = 2; row <= rowCount; row++) // 1. satırda başlıklar olduğu varsayımıyla 2. satırdan başlıyoruz
+            {
+                await IsExistGeneric(x => x.Label.Trim() == worksheet.Cells[row, 1].Text);
+
+                await IsExistOrderNumber(int.Parse(worksheet.Cells[row, 3].Text));
+                
+                var footerItem = new FooterItem()
+                {
+                    Label = worksheet.Cells[row, 1].Text, // 1. sütundaki değer
+                    Column = int.Parse(worksheet.Cells[row, 2].Text), // 2. sütundaki değer
+                    OrderNumber = int.Parse(worksheet.Cells[row, 3].Text), // 3. sütundaki değer
+                    TargetUrl = worksheet.Cells[row, 4].Text, // 4. sütundaki değer
+                    IsActive = true
+                };
+                
+                footerItems.Add(footerItem);
+            }
+
+            _applicationDbContext.FooterItems.AddRange(footerItems);
+
+            await _applicationDbContext.SaveChangesAsync();
+            
+            return _mapper.Map<List<GetFooterItemsResponse>>(footerItems);
+        }
+    }
+
 
     #endregion
 }

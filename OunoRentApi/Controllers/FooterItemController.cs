@@ -58,4 +58,13 @@ public class FooterItemController : ControllerBase
         var result = await _mediator.Send(new DeleteFooterItemCommand(footerItemId));
         return Ok(result);
     }
+    
+    [HttpPost]
+    [Route("importFooterItems")]
+    public async Task<IActionResult> ImportFooterItemsFromExcel(IFormFile file)
+    {
+        await _mediator.Send(new ImportFooterItemsFromExcelCommand(file));
+
+        return Ok();
+    }
 }

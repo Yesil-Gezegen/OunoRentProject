@@ -235,6 +235,8 @@ public class CategoryRepository : ICategoryRepository
     }
 
     #endregion
+
+    #region ExportCategoriesToExcel
     
      public async Task<byte[]> ExportCategoriesToExcel(Expression<Func<ExportExcelCategoryResponse, bool>>? predicate = null)
     {
@@ -294,4 +296,8 @@ public class CategoryRepository : ICategoryRepository
         return await Task.FromResult(package.GetAsByteArray());
     }
     }
+
+    #endregion
+
+ 
 }

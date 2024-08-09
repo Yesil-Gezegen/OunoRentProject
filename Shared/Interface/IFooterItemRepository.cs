@@ -15,4 +15,6 @@ public interface IFooterItemRepository
     Task<FooterItemResponse> UpdateFooterItem(UpdateFooterItemRequest updateFooterItemRequest);
     
     Task<Guid> DeleteFooterItem(Guid footerItemId);
+    
+    Task <List<GetFooterItemsResponse>> ImportFooterItemsFromExcel(Stream fileStream);
 }
