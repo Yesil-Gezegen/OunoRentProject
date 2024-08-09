@@ -6,7 +6,6 @@ using EntityLayer.Entities;
 using Shared.DTO.Category.Request;
 using BusinessLayer.Middlewares;
 using AutoMapper;
-using AutoMapper.Extensions.ExpressionMapping;
 using DataAccessLayer.Concrete.Context;
 using OfficeOpenXml;
 
@@ -35,7 +34,7 @@ public class CategoryRepository : ICategoryRepository
 
         if (predicate != null)
         {
-            var categoriesPredicate = _mapper.MapExpression<Expression<Func<Category, bool>>>(predicate);
+            var categoriesPredicate = _mapper.Map<Expression<Func<Category, bool>>>(predicate);
             categories = categories.Where(categoriesPredicate);
         }
 
@@ -47,7 +46,6 @@ public class CategoryRepository : ICategoryRepository
                 CategoryId = x.CategoryId,
                 Name = x.Name,
                 OrderNumber = x.OrderNumber,
-                IsActive = x.IsActive,
                 SubCategories = x.SubCategories.Select(y => new GetCategoriesResponse.SubCategory
                 {
                     SubCategoryId = y.SubCategoryId,
@@ -238,7 +236,7 @@ public class CategoryRepository : ICategoryRepository
 
     #endregion
     
-     public async Task<byte[]> ExportCategoriesToExcel(Expression<Func<GetCategoriesResponse, bool>>? predicate = null)
+     public async Task<byte[]> ExportCategoriesToExcel(Expression<Func<ExportExcelCategoryResponse, bool>>? predicate = null)
     {
         var categories = _applicationDbContext.Categories
         .AsNoTracking();
@@ -252,19 +250,15 @@ public class CategoryRepository : ICategoryRepository
     var categoriesList = await categories
         .Include(x => x.SubCategories)
         .OrderByDescending(x => x.ModifiedDateTime ?? x.CreatedDateTime)
-        .Select(x => new GetCategoriesResponse
+        .Select(x => new ExportExcelCategoryResponse
         {
-            CategoryId = x.CategoryId,
             Name = x.Name,
             OrderNumber = x.OrderNumber,
-            SubCategories = x.SubCategories.Select(y => new GetCategoriesResponse.SubCategory
+            SubCategories = x.SubCategories.Select(y => new ExportExcelCategoryResponse.SubCategory
             {
-                SubCategoryId = y.SubCategoryId,
                 Name = y.Name,
                 Description = y.Description,
-                Icon = y.Icon,
                 OrderNumber = y.OrderNumber,
-                IsActive = y.IsActive
             }).ToList()
         }).ToListAsync();
 
@@ -272,15 +266,11 @@ public class CategoryRepository : ICategoryRepository
     {
         var worksheet = package.Workbook.Worksheets.Add("Categories");
 
-        worksheet.Cells[1, 1].Value = "CategoryId";
-        worksheet.Cells[1, 2].Value = "Name";
-        worksheet.Cells[1, 3].Value = "OrderNumber";
-        worksheet.Cells[1, 4].Value = "SubCategoryId";
-        worksheet.Cells[1, 5].Value = "SubCategory Name";
-        worksheet.Cells[1, 6].Value = "Description";
-        worksheet.Cells[1, 7].Value = "Icon";
-        worksheet.Cells[1, 8].Value = "SubCategory OrderNumber";
-        worksheet.Cells[1, 9].Value = "IsActive";
+        worksheet.Cells[1, 1].Value = "Kategori Adı";
+        worksheet.Cells[1, 2].Value = "Sıra Numarası";
+        worksheet.Cells[1, 3].Value = "Alt Kategori Adı";
+        worksheet.Cells[1, 4].Value = "Açıklama";
+        worksheet.Cells[1, 5].Value = "Alt Kategori Sıra Numarası";
 
         worksheet.Row(1).Style.Font.Bold = true;
 
@@ -289,15 +279,11 @@ public class CategoryRepository : ICategoryRepository
         {
             foreach (var subCategory in category.SubCategories)
             {
-                worksheet.Cells[row, 1].Value = category.CategoryId;
-                worksheet.Cells[row, 2].Value = category.Name;
-                worksheet.Cells[row, 3].Value = category.OrderNumber;
-                worksheet.Cells[row, 4].Value = subCategory.SubCategoryId;
-                worksheet.Cells[row, 5].Value = subCategory.Name;
-                worksheet.Cells[row, 6].Value = subCategory.Description;
-                worksheet.Cells[row, 7].Value = subCategory.Icon;
-                worksheet.Cells[row, 8].Value = subCategory.OrderNumber;
-                worksheet.Cells[row, 9].Value = subCategory.IsActive;
+                worksheet.Cells[row, 1].Value = category.Name;
+                worksheet.Cells[row, 2].Value = category.OrderNumber;
+                worksheet.Cells[row, 3].Value = subCategory.Name;
+                worksheet.Cells[row, 4].Value = subCategory.Description;
+                worksheet.Cells[row, 5].Value = subCategory.OrderNumber;
 
                 row++;
             }

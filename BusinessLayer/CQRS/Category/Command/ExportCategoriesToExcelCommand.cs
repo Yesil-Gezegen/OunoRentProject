@@ -5,7 +5,7 @@ using Shared.Interface;
 
 namespace BusinessLayer.CQRS.Category.Command;
 
-public sealed record ExportCategoriesToExcelCommand(Expression<Func<GetCategoriesResponse, bool>>? Predicate = null) : IRequest<byte[]>
+public sealed record ExportCategoriesToExcelCommand(Expression<Func<ExportExcelCategoryResponse, bool>>? Predicate = null) : IRequest<byte[]>
 {
     internal class ExportCategoriesToExcelCommandHandler : IRequestHandler<ExportCategoriesToExcelCommand, byte[]>
     {
